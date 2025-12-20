@@ -8,7 +8,10 @@
   <meta name="apple-mobile-web-app-title" content="MoneyTrack">
   <meta name="theme-color" content="#111827">
   <title>MoneyTrack - Conteggio Contanti</title>
+
+  <!-- Manifest inline (puoi sostituirlo con manifest.webmanifest su GitHub Pages quando vuoi) -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -42,8 +45,8 @@
     }
 
     .header-green { background: #16a34a; }
-    .header-blue { background: #2563eb; }
-    .header-gray { background: #1f2937; }
+    .header-blue  { background: #2563eb; }
+    .header-gray  { background: #1f2937; }
 
     .logo-container {
       text-align: center;
@@ -143,7 +146,10 @@
       transition: all 0.1s;
     }
 
-    .key:active { background: #d1d5db; transform: scale(0.95); }
+    .key:active {
+      background: #d1d5db;
+      transform: scale(0.95);
+    }
 
     .mode-selector { display: flex; border-bottom: 1px solid #e5e7eb; }
 
@@ -208,8 +214,64 @@
       cursor: pointer;
       font-size: 18px;
     }
+
+    /* ===============================
+       LAYOUT ADATTIVO PER SCHERMI BASSI
+       =============================== */
+
+    @media (max-height: 720px) {
+      .keypad{
+        gap: 6px;
+        padding: 8px 12px;
+      }
+
+      .key{
+        aspect-ratio: auto;
+        height: 48px;
+        font-size: 18px;
+        border-radius: 10px;
+      }
+
+      .btn{
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .display-box{
+        padding: 14px;
+      }
+
+      .display-value{
+        font-size: 26px;
+      }
+
+      .display-label{
+        font-size: 11px;
+      }
+
+      .header{
+        padding-bottom: 12px;
+      }
+    }
+
+    @media (max-height: 640px) {
+      .key{
+        height: 44px;
+        font-size: 17px;
+      }
+
+      .display-value{
+        font-size: 24px;
+      }
+
+      .btn{
+        padding: 10px;
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div id="app"></div>
 
@@ -221,15 +283,15 @@
       screen: 'banks',
       selectedBank: '',
       selectedEmployee: '',
-      amount: '0',
-      rejected: '0',
+      amount: '0',     // input per valore macchina (AUTO) o importo (MANUALE)
+      rejected: '0',   // input scartate (AUTO)
       mode: 'manual',
       inputField: 'amount',
       totals: {},
-      lastMachineValue: {},   // ultimo valore memorizzato per banca
-      lastOp: null,
-      logs: [],
-      machineConfirmed: {}    // true/false per banca
+      lastMachineValue: {},   // ultimo valore macchina memorizzato per banca
+      machineConfirmed: {},   // true/false per banca (blocco anti-svista)
+      lastOp: null,           // per UNDO
+      logs: []                // per statistiche giornaliere
     };
 
     function getKey(bank, employee) { return `${bank}|||${employee}`; }
@@ -253,9 +315,9 @@
       const persist = {
         totals: state.totals,
         lastMachineValue: state.lastMachineValue,
+        machineConfirmed: state.machineConfirmed || {},
         lastOp: state.lastOp || null,
-        logs: state.logs || [],
-        machineConfirmed: state.machineConfirmed || {}
+        logs: state.logs || []
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(persist));
     }
@@ -267,15 +329,15 @@
         const data = JSON.parse(raw);
         state.totals = data.totals || {};
         state.lastMachineValue = data.lastMachineValue || {};
+        state.machineConfirmed = data.machineConfirmed || {};
         state.lastOp = data.lastOp || null;
         state.logs = data.logs || [];
-        state.machineConfirmed = data.machineConfirmed || {};
       } catch (e) {
         state.totals = {};
         state.lastMachineValue = {};
+        state.machineConfirmed = {};
         state.lastOp = null;
         state.logs = [];
-        state.machineConfirmed = {};
       }
     }
 
@@ -308,15 +370,13 @@
       let topEmp = null;
       let topVal = -Infinity;
       for (const [emp, val] of Object.entries(byEmp)) {
-        if (val > topVal) {
-          topVal = val;
-          topEmp = emp;
-        }
+        if (val > topVal) { topVal = val; topEmp = emp; }
       }
 
       return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
+    // ===== Render =====
     function render() {
       const app = document.getElementById('app');
 
@@ -338,9 +398,11 @@
               <button class="info-btn" onclick="goToInfo()">ⓘ</button>
             </div>
           </div>
+
           <div class="header header-green">
             <span style="font-weight: 600;">Seleziona Banca</span>
           </div>
+
           <div class="content">
             ${banks.map(bank => `
               <div class="list-item" onclick="selectBank('${bank}')">
@@ -350,14 +412,17 @@
             `).join('')}
           </div>
         `;
+        return;
+      }
 
-      } else if (state.screen === 'info') {
+      if (state.screen === 'info') {
         app.innerHTML = `
           <div class="header">
             <button class="back-btn" onclick="backFromInfo()">‹</button>
             <span style="font-weight: 600;">Informazioni</span>
             <div style="width: 32px;"></div>
           </div>
+
           <div class="content info-screen">
             <div class="logo-icon" style="width: 100px; height: 100px; margin: 0 auto;">
               <svg viewBox="0 0 40 40" width="50" height="50">
@@ -377,9 +442,12 @@
             <p style="color: #9ca3af; font-size: 12px; margin-top: 4px;">Tutti i diritti riservati</p>
           </div>
         `;
+        return;
+      }
 
-      } else if (state.screen === 'stats') {
+      if (state.screen === 'stats') {
         const s = computeTodayStats();
+
         const banksRows = Object.entries(s.byBank)
           .sort((a,b) => b[1]-a[1])
           .map(([bank, val]) => `
@@ -413,14 +481,17 @@
             ${banksRows || `<div style="padding:12px; color:#6b7280;">Nessun dato per oggi.</div>`}
           </div>
         `;
+        return;
+      }
 
-      } else if (state.screen === 'employees') {
+      if (state.screen === 'employees') {
         app.innerHTML = `
           <div class="header header-blue">
             <button class="back-btn" onclick="backToBanks()">‹</button>
             <span style="font-weight: 600; font-size: 14px;">${state.selectedBank}</span>
             <div style="width: 32px;"></div>
           </div>
+
           <div class="content">
             ${employees.map(emp => {
               const key = getKey(state.selectedBank, emp);
@@ -434,32 +505,27 @@
             }).join('')}
           </div>
         `;
+        return;
+      }
 
-      } else if (state.screen === 'counter') {
+      if (state.screen === 'counter') {
         const key = getKey(state.selectedBank, state.selectedEmployee);
         const currentTotal = state.totals[key] || 0;
 
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
         const amount = safeParse(state.amount);
         const rejected = safeParse(state.rejected);
+
         const diff = state.mode === 'auto' ? (amount - lastValue) : 0;
         const calculatedDiff = state.mode === 'auto' ? (diff + rejected) : 0;
 
         const okEnabled = (state.mode === 'manual') || (state.machineConfirmed[state.selectedBank] === true);
 
-        // (NEW) Mostra il bottone "Conferma valore macchina" solo se:
-        // - siamo in AUTO
-        // - stiamo editando "amount"
-        // - il valore attuale è > 0
-        // - ed è DIVERSO dall'ultimo memorizzato (o non confermato)
         const showConfirmMachine =
           state.mode === 'auto' &&
           state.inputField === 'amount' &&
-          (safeParse(state.amount) > 0) &&
-          (
-            state.machineConfirmed[state.selectedBank] !== true ||
-            safeParse(state.amount) !== (state.lastMachineValue[state.selectedBank] || 0)
-          );
+          (amount > 0) &&
+          (amount !== lastValue);
 
         app.innerHTML = `
           <div class="header header-gray">
@@ -484,9 +550,11 @@
           ${state.mode === 'auto' ? `
             <div style="background: #4b5563; color: white; padding: 12px; text-align: center; font-size: 12px;">
               <div>Selezionatrice (ultimo): ${formatEUR(lastValue)}</div>
+
               <div style="margin-top:6px; font-size:11px; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
                 ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
               </div>
+
               <div class="field-selector">
                 <button class="field-btn ${state.inputField === 'amount' ? 'active' : ''}" onclick="setInputField('amount')">Valore Macchina</button>
                 <button class="field-btn ${state.inputField === 'rejected' ? 'active' : ''}" onclick="setInputField('rejected')">Scartate</button>
@@ -500,7 +568,9 @@
                 ? 'IMPORTO'
                 : (state.inputField === 'amount' ? 'VALORE MACCHINA (ATTUALE)' : 'SCARTATE')
             }</div>
+
             <div class="display-value">€${(state.inputField === 'amount' ? state.amount : state.rejected)}</div>
+
             ${state.mode === 'auto' && state.inputField === 'amount' && state.amount !== '0' ? `
               <div style="font-size: 11px; margin-top: 8px;">
                 <span style="color: #fbbf24;">Diff: ${formatEUR(diff)}</span>
@@ -549,6 +619,7 @@
       }
     }
 
+    // ===== Navigazione =====
     function selectBank(bank) {
       state.selectedBank = bank;
       state.screen = 'employees';
@@ -597,6 +668,7 @@
       render();
     }
 
+    // ===== Input =====
     function setMode(mode) {
       state.mode = mode;
       state.amount = '0';
@@ -615,7 +687,7 @@
       const current = state[field];
       if (current === '0') {
         state[field] = digit;
-      } else if (current.length < 8) {
+      } else if (current.length < 10) {
         state[field] = current + digit;
       }
       render();
@@ -644,25 +716,67 @@
       render();
     }
 
-    // Conferma valore macchina (AUTO) senza conteggiare
+    // ===== Log helper =====
+    function pushLog(delta, kind) {
+      state.logs = state.logs || [];
+      state.logs.push({
+        ts: new Date().toISOString(),
+        bank: state.selectedBank,
+        emp: state.selectedEmployee,
+        delta: Number(delta) || 0,
+        kind
+      });
+    }
+
+    // ===== Azioni =====
+
+    // CONFERMA valore macchina:
+    // - aggiunge al dipendente SOLO (nuovoValore - ultimoValore)
+    // - aggiorna lastMachineValue
+    // - abilita OK (machineConfirmed)
+    // - passa automaticamente a "Scartate"
     function confirmMachineValue() {
       if (state.mode !== 'auto') return;
 
-      const value = safeParse(state.amount);
-      if (value <= 0) return;
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const currentTotal = state.totals[key] || 0;
 
-      state.lastMachineValue[state.selectedBank] = value;
+      const currentMachineValue = safeParse(state.amount);
+      if (currentMachineValue <= 0) return;
+
+      const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+      const delta = currentMachineValue - lastValue;
+
+      state.totals[key] = currentTotal + delta;
+
+      state.lastOp = {
+        key,
+        delta,
+        bank: state.selectedBank,
+        prevMachine: lastValue,
+        newMachine: currentMachineValue,
+        type: 'machine'
+      };
+
+      state.lastMachineValue[state.selectedBank] = currentMachineValue;
       state.machineConfirmed[state.selectedBank] = true;
 
+      pushLog(delta, "machine");
+
+      // dopo conferma vai diretto alle scartate
       state.amount = '0';
       state.rejected = '0';
-      state.inputField = 'amount';
-      state.lastOp = null;
+      state.inputField = 'rejected';
 
       saveState();
       render();
     }
 
+    // OK:
+    // - in MANUALE: aggiunge amount
+    // - in AUTO:
+    //   - se stai su "Scartate": aggiunge SOLO scartate
+    //   - se stai su "Valore Macchina": aggiunge (diff macchina + scartate) e aggiorna lastMachineValue
     function addToTotal() {
       const key = getKey(state.selectedBank, state.selectedEmployee);
       const currentTotal = state.totals[key] || 0;
@@ -670,42 +784,54 @@
 
       if (state.mode === 'manual') {
         amountToAdd = safeParse(state.amount);
+
         state.lastOp = {
           key,
           delta: amountToAdd,
           bank: state.selectedBank,
-          prevMachine: state.lastMachineValue[state.selectedBank] || 0
+          prevMachine: state.lastMachineValue[state.selectedBank] || 0,
+          type: 'manual'
         };
+
       } else {
         if (state.machineConfirmed[state.selectedBank] !== true) return;
 
-        const currentMachineValue = safeParse(state.amount);
         const rejectedAmount = safeParse(state.rejected);
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
 
-        amountToAdd = (currentMachineValue - lastValue) + rejectedAmount;
+        if (state.inputField === 'rejected') {
+          // SOLO scartate
+          amountToAdd = rejectedAmount;
 
-        state.lastOp = {
-          key,
-          delta: amountToAdd,
-          bank: state.selectedBank,
-          prevMachine: lastValue,
-          newMachine: currentMachineValue
-        };
+          state.lastOp = {
+            key,
+            delta: amountToAdd,
+            bank: state.selectedBank,
+            prevMachine: lastValue,
+            type: 'rejected'
+          };
 
-        state.lastMachineValue[state.selectedBank] = currentMachineValue;
+        } else {
+          // comportamento classico (valore macchina + scartate)
+          const currentMachineValue = safeParse(state.amount);
+          amountToAdd = (currentMachineValue - lastValue) + rejectedAmount;
+
+          state.lastOp = {
+            key,
+            delta: amountToAdd,
+            bank: state.selectedBank,
+            prevMachine: lastValue,
+            newMachine: currentMachineValue,
+            type: 'mixed'
+          };
+
+          state.lastMachineValue[state.selectedBank] = currentMachineValue;
+          state.machineConfirmed[state.selectedBank] = true;
+        }
       }
 
       state.totals[key] = currentTotal + amountToAdd;
-
-      // LOG movimento per statistiche
-      state.logs = state.logs || [];
-      state.logs.push({
-        ts: new Date().toISOString(),
-        bank: state.selectedBank,
-        emp: state.selectedEmployee,
-        delta: amountToAdd
-      });
+      pushLog(amountToAdd, state.mode === 'manual' ? "manual" : "ok");
 
       state.amount = '0';
       state.rejected = '0';
@@ -722,16 +848,16 @@
       const cur = state.totals[op.key] || 0;
       state.totals[op.key] = cur - (op.delta || 0);
 
-      if (state.mode === 'auto' && op.bank) {
+      // ripristina lastMachineValue (sempre, indipendentemente dalla modalità attuale)
+      if (op.bank && op.prevMachine !== undefined) {
         state.lastMachineValue[op.bank] = op.prevMachine || 0;
       }
 
-      // Rimuove l’ultimo log (se corrisponde)
+      // togli ultimo log se plausibile (ultimo OK)
       if (state.logs && state.logs.length) {
         const last = state.logs[state.logs.length - 1];
-        if (last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp)) {
-          state.logs.pop();
-        }
+        const sameKey = last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp);
+        if (sameKey) state.logs.pop();
       }
 
       state.lastOp = null;
@@ -756,12 +882,14 @@
 
       state.amount = '0';
       state.rejected = '0';
+      state.inputField = 'amount';
       state.lastOp = null;
+
       saveState();
       render();
     }
 
-    // Inizializza l'app
+    // ===== Avvio =====
     loadState();
     render();
 
@@ -769,9 +897,7 @@
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (event) {
       const now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
+      if (now - lastTouchEnd <= 300) event.preventDefault();
       lastTouchEnd = now;
     }, false);
   </script>
