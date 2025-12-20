@@ -106,6 +106,12 @@
     .btn-danger  { background: #dc2626; color: white; }
     .btn-warning { background: #f59e0b; color: white; }
 
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     .display-box { padding: 20px; text-align: center; }
 
     .display-label {
@@ -183,8 +189,6 @@
       margin: 20px 0;
     }
 
-    .hidden { display: none; }
-
     .back-btn {
       background: none;
       border: none;
@@ -222,9 +226,10 @@
       mode: 'manual',
       inputField: 'amount',
       totals: {},
-      lastMachineValue: {},
+      lastMachineValue: {},   // ultimo valore memorizzato per banca
       lastOp: null,
-      logs: []
+      logs: [],
+      machineConfirmed: {}    // true/false per banca
     };
 
     function getKey(bank, employee) { return `${bank}|||${employee}`; }
@@ -249,7 +254,8 @@
         totals: state.totals,
         lastMachineValue: state.lastMachineValue,
         lastOp: state.lastOp || null,
-        logs: state.logs || []
+        logs: state.logs || [],
+        machineConfirmed: state.machineConfirmed || {}
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(persist));
     }
@@ -263,11 +269,13 @@
         state.lastMachineValue = data.lastMachineValue || {};
         state.lastOp = data.lastOp || null;
         state.logs = data.logs || [];
+        state.machineConfirmed = data.machineConfirmed || {};
       } catch (e) {
         state.totals = {};
         state.lastMachineValue = {};
         state.lastOp = null;
         state.logs = [];
+        state.machineConfirmed = {};
       }
     }
 
@@ -431,11 +439,27 @@
         const key = getKey(state.selectedBank, state.selectedEmployee);
         const currentTotal = state.totals[key] || 0;
 
-        const lastValue = state.lastMachineValue[state.selectedBank] || 0; // ultimo memorizzato
-        const amount = safeParse(state.amount);      // valore macchina attuale (input)
-        const rejected = safeParse(state.rejected);  // scartate
+        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+        const amount = safeParse(state.amount);
+        const rejected = safeParse(state.rejected);
         const diff = state.mode === 'auto' ? (amount - lastValue) : 0;
         const calculatedDiff = state.mode === 'auto' ? (diff + rejected) : 0;
+
+        const okEnabled = (state.mode === 'manual') || (state.machineConfirmed[state.selectedBank] === true);
+
+        // (NEW) Mostra il bottone "Conferma valore macchina" solo se:
+        // - siamo in AUTO
+        // - stiamo editando "amount"
+        // - il valore attuale è > 0
+        // - ed è DIVERSO dall'ultimo memorizzato (o non confermato)
+        const showConfirmMachine =
+          state.mode === 'auto' &&
+          state.inputField === 'amount' &&
+          (safeParse(state.amount) > 0) &&
+          (
+            state.machineConfirmed[state.selectedBank] !== true ||
+            safeParse(state.amount) !== (state.lastMachineValue[state.selectedBank] || 0)
+          );
 
         app.innerHTML = `
           <div class="header header-gray">
@@ -460,6 +484,9 @@
           ${state.mode === 'auto' ? `
             <div style="background: #4b5563; color: white; padding: 12px; text-align: center; font-size: 12px;">
               <div>Selezionatrice (ultimo): ${formatEUR(lastValue)}</div>
+              <div style="margin-top:6px; font-size:11px; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
+                ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
+              </div>
               <div class="field-selector">
                 <button class="field-btn ${state.inputField === 'amount' ? 'active' : ''}" onclick="setInputField('amount')">Valore Macchina</button>
                 <button class="field-btn ${state.inputField === 'rejected' ? 'active' : ''}" onclick="setInputField('rejected')">Scartate</button>
@@ -468,7 +495,11 @@
           ` : ''}
 
           <div class="display-box" style="background: ${state.mode === 'manual' ? '#374151' : '#7c3aed'}; color: white;">
-            <div class="display-label">${state.mode === 'manual' ? 'IMPORTO' : (state.inputField === 'amount' ? 'VALORE MACCHINA' : 'SCARTATE')}</div>
+            <div class="display-label">${
+              state.mode === 'manual'
+                ? 'IMPORTO'
+                : (state.inputField === 'amount' ? 'VALORE MACCHINA (ATTUALE)' : 'SCARTATE')
+            }</div>
             <div class="display-value">€${(state.inputField === 'amount' ? state.amount : state.rejected)}</div>
             ${state.mode === 'auto' && state.inputField === 'amount' && state.amount !== '0' ? `
               <div style="font-size: 11px; margin-top: 8px;">
@@ -478,6 +509,14 @@
               </div>
             ` : ''}
           </div>
+
+          ${showConfirmMachine ? `
+            <div style="padding: 0 12px 12px;">
+              <button class="btn" style="width:100%; background:#0ea5e9; color:white;" onclick="confirmMachineValue()">
+                ✔ CONFERMA VALORE MACCHINA
+              </button>
+            </div>
+          ` : ''}
 
           <div class="keypad">
             <button class="key" onclick="addDigit('1')">1</button>
@@ -497,7 +536,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 12px;">
             <button class="btn" style="background:#6b7280; color:white;" onclick="undoLast()">UNDO</button>
             <button class="btn btn-warning" onclick="clearInput()">CLEAR</button>
-            <button class="btn btn-primary" onclick="addToTotal()">✓ OK</button>
+            <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : ''}">✓ OK</button>
             <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
           </div>
 
@@ -605,6 +644,25 @@
       render();
     }
 
+    // Conferma valore macchina (AUTO) senza conteggiare
+    function confirmMachineValue() {
+      if (state.mode !== 'auto') return;
+
+      const value = safeParse(state.amount);
+      if (value <= 0) return;
+
+      state.lastMachineValue[state.selectedBank] = value;
+      state.machineConfirmed[state.selectedBank] = true;
+
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      state.lastOp = null;
+
+      saveState();
+      render();
+    }
+
     function addToTotal() {
       const key = getKey(state.selectedBank, state.selectedEmployee);
       const currentTotal = state.totals[key] || 0;
@@ -619,6 +677,8 @@
           prevMachine: state.lastMachineValue[state.selectedBank] || 0
         };
       } else {
+        if (state.machineConfirmed[state.selectedBank] !== true) return;
+
         const currentMachineValue = safeParse(state.amount);
         const rejectedAmount = safeParse(state.rejected);
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
@@ -692,6 +752,8 @@
 
     function resetMachine() {
       state.lastMachineValue[state.selectedBank] = 0;
+      state.machineConfirmed[state.selectedBank] = false;
+
       state.amount = '0';
       state.rejected = '0';
       state.lastOp = null;
