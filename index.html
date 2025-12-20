@@ -12,139 +12,175 @@
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
 
   <style>
-    :root {
-      --primary: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --dark: #111827;
-      --gray-bg: #f3f4f6;
+    :root{
+      --primary:#2563eb;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --dark:#111827;
+      --gray-bg:#f3f4f6;
+      --slate:#374151;
+      --purple:#7c3aed;
+      --cyan:#0ea5e9;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:var(--dark);
+      overflow:hidden;
+      position:fixed;
+      width:100%;
+      height:100%;
+      overscroll-behavior:none;
+    }
+    #app{width:100%;height:100%;display:flex;flex-direction:column;background:white;}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--dark);
-      overflow: hidden;
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      overscroll-behavior: none;
+    .header{
+      background:var(--dark);
+      color:white;
+      padding:env(safe-area-inset-top) 16px 16px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      z-index:10;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header-green{background:var(--success);}
+    .header-blue{background:var(--primary);}
+    .header-gray{background:var(--slate);}
+
+    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:white;}
+
+    .logo-container{text-align:center;padding:30px 20px;background:var(--dark);}
+    .logo-icon{
+      width:92px;height:92px;margin:0 auto 12px;
+      border-radius:22px;
+      background:linear-gradient(135deg,#06b6d4,#3b82f6);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 10px 25px rgba(0,0,0,0.25);
+      padding:10px;
+    }
+    .logo-img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      border-radius:14px;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+    }
+    .logo-text{
+      font-size:24px;font-weight:800;
+      background:linear-gradient(135deg,#06b6d4,#3b82f6);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     }
 
-    #app {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      background: white;
+    .list-item{
+      padding:18px 20px;
+      border-bottom:1px solid #f0f0f0;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:background 0.1s;
+      cursor:pointer;
+    }
+    .list-item:active{background:#f9fafb;}
+
+    .btn{
+      padding:14px;border:none;border-radius:12px;
+      font-size:15px;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:transform 0.1s, opacity 0.2s;
+      user-select:none;
+    }
+    .btn:active{transform:scale(0.96);}
+    .btn-primary{background:var(--success);color:white;}
+    .btn-danger{background:var(--danger);color:white;}
+    .btn-outline{background:#e5e7eb;color:#374151;}
+    .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
+
+    .display-box{padding:15px;text-align:center;position:relative;}
+    .display-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px;}
+    .display-value{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;}
+
+    .mode-selector{display:flex;background:#f3f4f6;padding:4px;gap:4px;}
+    .mode-btn{
+      flex:1;padding:10px;border:none;border-radius:8px;
+      font-weight:800;font-size:12px;background:transparent;color:#6b7280;
+      cursor:pointer;
+    }
+    .mode-btn.active{background:white;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+
+    .field-selector{display:flex;gap:8px;padding:10px;justify-content:center;background:#4b5563;}
+    .field-btn{
+      padding:8px 16px;border:none;border-radius:20px;
+      background:rgba(255,255,255,0.2);color:white;font-size:11px;font-weight:800;
+      cursor:pointer;
+    }
+    .field-btn.active{background:white;color:#374151;}
+
+    .keypad{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:10px;padding:15px;background:#f9fafb;
+    }
+    .key{
+      height:60px;border:none;border-radius:14px;
+      font-size:22px;font-weight:700;background:white;
+      box-shadow:0 2px 4px rgba(0,0,0,0.05);
+      color:var(--dark);
+      cursor:pointer;
+      transition:transform .1s, background .1s, opacity .2s;
+      user-select:none;
+    }
+    .key:active{background:#e2e8f0;transform:scale(0.95);}
+    .key.action{background:#fee2e2;color:var(--danger);}
+
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:6px 10px;border-radius:999px;
+      font-size:11px;font-weight:800;
     }
 
-    .header {
-      background: var(--dark);
-      color: white;
-      padding: env(safe-area-inset-top) 16px 16px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .info-card{
+      margin:20px;padding:26px 20px;
+      background:var(--dark);color:white;
+      border-radius:20px;text-align:center;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+    .dev-badge{
+      display:inline-block;padding:6px 15px;
+      background:rgba(255,255,255,0.1);border-radius:30px;
+      font-size:12px;font-weight:700;color:#06b6d4;margin-bottom:15px;
     }
 
-    .header-green { background: var(--success); }
-    .header-blue  { background: var(--primary); }
-    .header-gray  { background: #374151; }
-
-    .logo-container { text-align: center; padding: 30px 20px; background: var(--dark); }
-    .logo-icon {
-      width: 70px; height: 70px; margin: 0 auto 12px;
-      background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      border-radius: 18px; display: flex; align-items: center; justify-content: center;
-      font-size: 30px;
+    /* Responsive automatico per altezza */
+    @media (max-height: 720px){
+      .logo-container{padding:18px 15px;}
+      .logo-icon{width:84px;height:84px;border-radius:20px;}
+      .keypad{gap:8px;padding:12px;}
+      .key{height:50px;font-size:20px;border-radius:12px;}
+      .btn{padding:12px;font-size:14px;}
+      .display-box{padding:12px;}
+      .display-value{font-size:26px;}
+      .header{padding-bottom:12px;}
     }
-    .logo-text {
-      font-size: 24px; font-weight: 800;
-      background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: white; }
-
-    .list-item {
-      padding: 18px 20px;
-      border-bottom: 1px solid #f0f0f0;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.1s;
-    }
-    .list-item:active { background: #f9fafb; }
-
-    .btn {
-      padding: 14px; border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.1s, opacity 0.2s;
-    }
-    .btn:active { transform: scale(0.96); }
-    .btn-primary { background: var(--success); color: white; }
-    .btn-danger  { background: var(--danger); color: white; }
-    .btn-outline { background: #e5e7eb; color: #374151; }
-    .btn:disabled { opacity: 0.4; }
-
-    .display-box { padding: 15px; text-align: center; position: relative; }
-    .display-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 4px; }
-    .display-value { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; }
-
-    .keypad {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 10px; padding: 15px; background: #f9fafb;
-    }
-    .key {
-      height: 60px; border: none; border-radius: 14px;
-      font-size: 22px; font-weight: 600; background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--dark);
-    }
-    .key:active { background: #e2e8f0; transform: scale(0.95); }
-    .key.action { background: #fee2e2; color: var(--danger); }
-
-    .mode-selector { display: flex; background: #f3f4f6; padding: 4px; gap: 4px; }
-    .mode-btn {
-      flex: 1; padding: 10px; border: none; border-radius: 8px;
-      font-weight: 700; font-size: 12px; background: transparent; color: #6b7280;
-    }
-    .mode-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-    .field-selector { display: flex; gap: 8px; padding: 10px; justify-content: center; background: #4b5563; }
-    .field-btn {
-      padding: 8px 16px; border: none; border-radius: 20px;
-      background: rgba(255,255,255,0.2); color: white; font-size: 11px; font-weight: 600;
-    }
-    .field-btn.active { background: white; color: #374151; }
-
-    /* Info Screen Styles */
-    .info-card {
-      margin: 20px; padding: 30px 20px;
-      background: var(--dark); color: white;
-      border-radius: 20px; text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    .dev-badge {
-      display: inline-block; padding: 6px 15px;
-      background: rgba(255,255,255,0.1); border-radius: 30px;
-      font-size: 12px; font-weight: 600; color: #06b6d4; margin-bottom: 15px;
-    }
-
-    @media (max-height: 700px) {
-      .key { height: 50px; font-size: 20px; }
-      .logo-container { padding: 15px; }
+    @media (max-height: 640px){
+      .logo-icon{width:78px;height:78px;border-radius:18px;}
+      .key{height:44px;font-size:18px;}
+      .display-value{font-size:24px;}
+      .btn{padding:10px;font-size:13px;}
     }
   </style>
 </head>
+
 <body>
   <div id="app"></div>
 
   <script>
-    const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
-    const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
+    // 👉 Metti il file qui:
+    const LOGO_SRC = "assets/moneytrack-logo.png";
+
+    const banks = ['Euronet','Chianti Banca','CCB','CRV','Medio Banca','MPS','MPS PG','Intesa S.Paolo'];
+    const employees = ['Francesco','Silvia','Dorota','William','Stefania','Filomena','Valeria','Flavio','Ciro','Alessandro','Ida'];
+
+    const STORAGE_KEY = "moneytrack_pro_v2";
 
     let state = {
       screen: 'banks',
@@ -157,170 +193,521 @@
       totals: {},
       lastMachineValue: {},
       machineConfirmed: {},
+      lastOp: null,
       logs: []
     };
 
-    const STORAGE_KEY = "moneytrack_v1_save";
+    function getKey(bank, emp){ return `${bank}|||${emp}`; }
 
-    function formatEUR(n) {
-      return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n || 0);
+    function formatEUR(n){
+      return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(Number(n)||0);
     }
 
-    function safeParse(v) {
+    function safeParse(v){
       const s = (v ?? "0").toString();
+      if (s === "." || s === "") return 0;
+      if (s.endsWith(".")) return parseFloat(s.slice(0,-1)) || 0;
       const val = parseFloat(s);
       return isNaN(val) ? 0 : val;
     }
 
-    function save() {
+    function save(){
       const data = {
         totals: state.totals,
         lastMachineValue: state.lastMachineValue,
         machineConfirmed: state.machineConfirmed,
-        logs: state.logs
+        logs: state.logs,
+        lastOp: state.lastOp
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function load() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return;
         const parsed = JSON.parse(raw);
         state.totals = parsed.totals || {};
         state.lastMachineValue = parsed.lastMachineValue || {};
         state.machineConfirmed = parsed.machineConfirmed || {};
         state.logs = parsed.logs || [];
+        state.lastOp = parsed.lastOp || null;
+      }catch(e){
+        state.totals = {};
+        state.lastMachineValue = {};
+        state.machineConfirmed = {};
+        state.logs = [];
+        state.lastOp = null;
       }
     }
 
-    function addDigit(d) {
-      let current = state[state.inputField];
-      if (current === '0') state[state.inputField] = d;
-      else if (current.length < 9) state[state.inputField] += d;
-      render();
+    function pushLog(delta, kind){
+      state.logs = state.logs || [];
+      state.logs.push({
+        ts: new Date().toISOString(),
+        bank: state.selectedBank,
+        emp: state.selectedEmployee,
+        delta: Number(delta) || 0,
+        kind
+      });
     }
 
-    function addDecimal() {
-      if (!state[state.inputField].includes('.')) {
-        state[state.inputField] += '.';
-        render();
+    function startOfTodayLocal(){
+      const d = new Date();
+      d.setHours(0,0,0,0);
+      return d.getTime();
+    }
+
+    function computeTodayStats(){
+      const start = startOfTodayLocal();
+      let totalToday = 0;
+      const byBank = {};
+      const byEmp = {};
+
+      for(const e of (state.logs||[])){
+        const t = new Date(e.ts).getTime();
+        if(isNaN(t) || t < start) continue;
+        const delta = Number(e.delta) || 0;
+        totalToday += delta;
+        byBank[e.bank] = (byBank[e.bank] || 0) + delta;
+        byEmp[e.emp] = (byEmp[e.emp] || 0) + delta;
       }
+
+      let topEmp = null;
+      let topVal = -Infinity;
+      for(const [emp,val] of Object.entries(byEmp)){
+        if(val > topVal){ topVal = val; topEmp = emp; }
+      }
+      return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
-    function deleteDigit() {
-      let current = state[state.inputField];
-      state[state.inputField] = current.length > 1 ? current.slice(0, -1) : '0';
+    // ===== Input keypad =====
+    function addDigit(d){
+      const f = state.inputField;
+      let cur = state[f];
+      if(cur === '0') state[f] = d;
+      else if(cur.length < 10) state[f] = cur + d;
+      render();
+    }
+    function addDecimal(){
+      const f = state.inputField;
+      if(!state[f].includes('.')) state[f] += '.';
+      render();
+    }
+    function deleteDigit(){
+      const f = state.inputField;
+      let cur = state[f];
+      state[f] = (cur.length > 1) ? cur.slice(0,-1) : '0';
+      if(state[f] === '-') state[f] = '0';
+      render();
+    }
+    function clearInput(){
+      state[state.inputField] = '0';
       render();
     }
 
-    function render() {
+    // ===== Core actions =====
+    function setMode(mode){
+      state.mode = mode;
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      render();
+    }
+
+    function setInputField(field){
+      state.inputField = field;
+      render();
+    }
+
+    function confirmMachineValue(){
+      if(state.mode !== 'auto') return;
+
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const currentTotal = state.totals[key] || 0;
+
+      const currentMachineValue = safeParse(state.amount);
+      if(currentMachineValue <= 0) return;
+
+      const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+      const delta = currentMachineValue - lastValue;
+
+      state.totals[key] = currentTotal + delta;
+
+      state.lastOp = {
+        key,
+        delta,
+        bank: state.selectedBank,
+        prevMachine: lastValue,
+        newMachine: currentMachineValue,
+        type: 'machine'
+      };
+
+      state.lastMachineValue[state.selectedBank] = currentMachineValue;
+      state.machineConfirmed[state.selectedBank] = true;
+
+      pushLog(delta, "machine");
+
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'rejected';
+
+      save();
+      render();
+    }
+
+    function addToTotal(){
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const currentTotal = state.totals[key] || 0;
+      let add = 0;
+
+      if(state.mode === 'manual'){
+        add = safeParse(state.amount);
+        state.lastOp = {
+          key,
+          delta: add,
+          bank: state.selectedBank,
+          prevMachine: state.lastMachineValue[state.selectedBank] || 0,
+          type: 'manual'
+        };
+      } else {
+        if(state.machineConfirmed[state.selectedBank] !== true) return;
+
+        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+        const rejectedAmount = safeParse(state.rejected);
+
+        if(state.inputField === 'rejected'){
+          add = rejectedAmount;
+          state.lastOp = {
+            key,
+            delta: add,
+            bank: state.selectedBank,
+            prevMachine: lastValue,
+            type: 'rejected'
+          };
+        } else {
+          const currentMachineValue = safeParse(state.amount);
+          add = (currentMachineValue - lastValue) + rejectedAmount;
+
+          state.lastOp = {
+            key,
+            delta: add,
+            bank: state.selectedBank,
+            prevMachine: lastValue,
+            newMachine: currentMachineValue,
+            type: 'mixed'
+          };
+
+          state.lastMachineValue[state.selectedBank] = currentMachineValue;
+          state.machineConfirmed[state.selectedBank] = true;
+        }
+      }
+
+      state.totals[key] = currentTotal + add;
+      pushLog(add, state.mode === 'manual' ? "manual" : "ok");
+
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+
+      save();
+      render();
+    }
+
+    function undoLast(){
+      const op = state.lastOp;
+      if(!op || !op.key) return;
+
+      const cur = state.totals[op.key] || 0;
+      state.totals[op.key] = cur - (op.delta || 0);
+
+      if(op.bank && op.prevMachine !== undefined){
+        state.lastMachineValue[op.bank] = op.prevMachine || 0;
+      }
+
+      if(state.logs && state.logs.length){
+        const last = state.logs[state.logs.length - 1];
+        const same = last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp);
+        if(same) state.logs.pop();
+      }
+
+      state.lastOp = null;
+      save();
+      render();
+    }
+
+    function resetTotal(){
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      state.totals[key] = 0;
+      state.amount = '0';
+      state.rejected = '0';
+      state.lastOp = null;
+      save();
+      render();
+    }
+
+    function resetMachine(){
+      state.lastMachineValue[state.selectedBank] = 0;
+      state.machineConfirmed[state.selectedBank] = false;
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      state.lastOp = null;
+      save();
+      render();
+    }
+
+    // ===== Render =====
+    function render(){
       const app = document.getElementById('app');
 
-      if (state.screen === 'banks') {
+      if(state.screen === 'banks'){
         app.innerHTML = `
           <div class="header">
-            <span style="font-weight:700">MoneyTrack Pro</span>
+            <span style="font-weight:800">MoneyTrack Pro</span>
             <div style="display:flex; gap:10px">
-               <button class="btn" style="background:#374151; padding:8px" onclick="state.screen='stats'; render()">📊</button>
-               <button class="btn" style="background:#374151; padding:8px" onclick="state.screen='info'; render()">ℹ️</button>
+              <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='stats'; render()">📊</button>
+              <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='info'; render()">ℹ️</button>
             </div>
           </div>
+
           <div class="logo-container">
-            <div class="logo-icon">💰</div>
+            <div class="logo-icon">
+              <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
+            </div>
             <div class="logo-text">MoneyTrack</div>
           </div>
-          <div class="header header-green" style="padding:10px 16px; font-size:13px">SELEZIONA BANCA</div>
+
+          <div class="header header-green" style="padding:10px 16px; font-size:13px">
+            SELEZIONA BANCA
+          </div>
+
           <div class="content">
             ${banks.map(b => `
               <div class="list-item" onclick="state.selectedBank='${b}'; state.screen='employees'; render()">
-                <span style="font-weight:600">${b}</span>
+                <span style="font-weight:800">${b}</span>
                 <span style="color:#9ca3af">›</span>
               </div>
             `).join('')}
           </div>
         `;
-      } 
-      
-      else if (state.screen === 'info') {
+        return;
+      }
+
+      if(state.screen === 'info'){
         app.innerHTML = `
           <div class="header">
             <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
-            <span style="font-weight:700">Informazioni</span>
-            <div style="width:30px"></div>
+            <span style="font-weight:800">Informazioni</span>
+            <div style="width:40px"></div>
           </div>
+
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
-              <div class="logo-icon" style="margin-bottom:20px; width:60px; height:60px; font-size:24px">🛠️</div>
+              <div class="logo-icon" style="margin:0 auto 18px;">
+                <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
+              </div>
+
               <div class="dev-badge">DEVELOPER</div>
               <h1 style="font-size:28px; letter-spacing:1px; margin-bottom:5px">TESTI FRANCESCO</h1>
               <p style="opacity:0.6; font-size:14px">Software Engineer & Design</p>
-              <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.4">
-                MoneyTrack Pro v1.2.0<br>© 2024 Tutti i diritti riservati
+
+              <div style="margin-top:26px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.4">
+                MoneyTrack Pro v1.3.0<br>© 2024 Tutti i diritti riservati
               </div>
             </div>
           </div>
         `;
+        return;
       }
 
-      else if (state.screen === 'employees') {
+      if(state.screen === 'stats'){
+        const s = computeTodayStats();
+        const topText = s.topEmp ? `${s.topEmp} — ${formatEUR(s.topVal)}` : "Nessun movimento oggi";
+
+        const rows = Object.entries(s.byBank)
+          .sort((a,b)=>b[1]-a[1])
+          .map(([bank,val]) => `
+            <div class="list-item" style="cursor:default">
+              <span style="font-weight:800">${bank}</span>
+              <span style="font-weight:900; color:var(--success)">${formatEUR(val)}</span>
+            </div>
+          `).join('');
+
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
+            <span style="font-weight:800">Statistiche (Oggi)</span>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content" style="background:#fff">
+            <div class="display-box" style="background:var(--dark); color:white">
+              <div class="display-label">Totale giornaliero</div>
+              <div class="display-value">${formatEUR(s.totalToday)}</div>
+            </div>
+
+            <div class="display-box" style="background:var(--purple); color:white">
+              <div class="display-label">Chi ha contato di più 👀</div>
+              <div style="font-size:18px; font-weight:900">${topText}</div>
+            </div>
+
+            <div style="padding:12px 16px; font-weight:900; color:var(--dark); background:#fff">
+              Totale per banca (oggi)
+            </div>
+
+            ${rows || `<div style="padding:16px; color:#6b7280">Nessun dato per oggi.</div>`}
+          </div>
+        `;
+        return;
+      }
+
+      if(state.screen === 'employees'){
         app.innerHTML = `
           <div class="header header-blue">
             <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
-            <span style="font-weight:700">${state.selectedBank}</span>
-            <div style="width:30px"></div>
+            <span style="font-weight:900">${state.selectedBank}</span>
+            <div style="width:40px"></div>
           </div>
+
           <div class="content">
             ${employees.map(e => {
-              const total = state.totals[`${state.selectedBank}|||${e}`] || 0;
+              const total = state.totals[getKey(state.selectedBank, e)] || 0;
               return `
-                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; render()">
-                  <span style="font-weight:500">${e}</span>
-                  <span style="font-weight:700; color:var(--success)">${formatEUR(total)}</span>
+                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
+                  <span style="font-weight:700">${e}</span>
+                  <span style="font-weight:900; color:var(--success)">${formatEUR(total)}</span>
                 </div>
               `;
             }).join('')}
           </div>
         `;
+        return;
       }
 
-      else if (state.screen === 'counter') {
-        const key = `${state.selectedBank}|||${state.selectedEmployee}`;
+      if(state.screen === 'counter'){
+        const key = getKey(state.selectedBank, state.selectedEmployee);
+        const total = state.totals[key] || 0;
+
+        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+        const amountVal = safeParse(state.amount);
+        const rejectedVal = safeParse(state.rejected);
+
+        const okEnabled = (state.mode === 'manual') || (state.machineConfirmed[state.selectedBank] === true);
+
+        const showConfirmMachine =
+          state.mode === 'auto' &&
+          state.inputField === 'amount' &&
+          (amountVal > 0) &&
+          (amountVal !== lastValue);
+
+        const diff = (state.mode === 'auto') ? (amountVal - lastValue) : 0;
+        const calc = (state.mode === 'auto') ? (diff + rejectedVal) : 0;
+
         app.innerHTML = `
           <div class="header header-gray">
             <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='employees'; render()">‹</button>
             <div style="text-align:center">
-              <div style="font-size:10px; opacity:0.8">${state.selectedBank}</div>
-              <div style="font-weight:700">${state.selectedEmployee}</div>
+              <div style="font-size:10px; opacity:0.85">${state.selectedBank}</div>
+              <div style="font-weight:900">${state.selectedEmployee}</div>
             </div>
-            <div style="width:30px"></div>
+            <div style="width:40px"></div>
           </div>
+
+          <div class="mode-selector">
+            <button class="mode-btn ${state.mode==='manual' ? 'active':''}" onclick="setMode('manual')">MANUALE</button>
+            <button class="mode-btn ${state.mode==='auto' ? 'active':''}" onclick="setMode('auto')">AUTO DIFF</button>
+          </div>
+
           <div class="content">
             <div class="display-box" style="background:var(--primary); color:white">
-              <div class="display-label">Saldo Corrente</div>
-              <div class="display-value">${formatEUR(state.totals[key])}</div>
+              <div class="display-label">Tot. dipendente</div>
+              <div class="display-value">${formatEUR(total)}</div>
             </div>
+
+            ${state.mode === 'auto' ? `
+              <div style="background:#4b5563; color:white; padding:10px 12px; text-align:center;">
+                <div style="font-size:12px; font-weight:900;">
+                  Selezionatrice (ultimo): <span style="opacity:.95">${formatEUR(lastValue)}</span>
+                </div>
+
+                <div style="margin-top:6px; font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
+                  ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
+                </div>
+              </div>
+
+              <div class="field-selector">
+                <button class="field-btn ${state.inputField==='amount'?'active':''}" onclick="setInputField('amount')">Valore Macchina</button>
+                <button class="field-btn ${state.inputField==='rejected'?'active':''}" onclick="setInputField('rejected')">Scartate</button>
+              </div>
+            ` : ''}
+
             <div class="display-box" style="background:#f9fafb">
-              <div class="display-label" style="color:#6b7280">Inserimento</div>
-              <div class="display-value" style="color:var(--dark)">€ ${state[state.inputField]}</div>
+              <div class="display-label" style="color:#6b7280">
+                ${state.mode === 'manual'
+                  ? 'Inserimento'
+                  : (state.inputField === 'amount' ? 'Valore macchina (attuale)' : 'Scartate')}
+              </div>
+
+              <div class="display-value" style="color:var(--dark)">
+                € ${state.inputField === 'amount' ? state.amount : state.rejected}
+              </div>
+
+              ${state.mode === 'auto' && state.inputField === 'amount' && (state.amount !== '0' || state.rejected !== '0') ? `
+                <div style="margin-top:8px; font-size:12px; font-weight:900;">
+                  <span class="pill" style="background:#fde68a; color:#92400e">Diff: ${formatEUR(diff)}</span>
+                  ${rejectedVal ? `<span class="pill" style="background:#fecaca; color:#991b1b; margin-left:8px">+ Scart: ${formatEUR(rejectedVal)}</span>` : ''}
+                  <span class="pill" style="background:#bbf7d0; color:#065f46; margin-left:8px">= ${formatEUR(calc)}</span>
+                </div>
+              ` : ''}
             </div>
+
+            ${showConfirmMachine ? `
+              <div style="padding:0 15px 10px;">
+                <button class="btn" style="width:100%; background:var(--cyan); color:white" onclick="confirmMachineValue()">
+                  ✔ CONFERMA VALORE MACCHINA
+                </button>
+              </div>
+            ` : ''}
+
             <div class="keypad">
               ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="addDigit('${n}')">${n}</button>`).join('')}
               <button class="key" onclick="addDecimal()">.</button>
               <button class="key" onclick="addDigit('0')">0</button>
               <button class="key action" onclick="deleteDigit()">⌫</button>
             </div>
-            <div style="padding:15px">
-              <button class="btn btn-primary" style="width:100%" onclick="state.totals['${key}']=(state.totals['${key}']||0)+safeParse(state.amount); state.amount='0'; save(); render()">CONFERMA E AGGIUNGI</button>
+
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:15px; background:#fff;">
+              <button class="btn btn-outline" onclick="undoLast()">UNDO</button>
+              <button class="btn btn-outline" onclick="clearInput()">CLEAR</button>
+              <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : ''}">OK</button>
+              <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
             </div>
+
+            ${state.mode === 'auto' ? `
+              <div style="padding:0 15px 15px;">
+                <button class="btn btn-outline" style="width:100%; background:var(--purple); color:white" onclick="resetMachine()">
+                  RESET SELEZIONATRICE
+                </button>
+              </div>
+            ` : ''}
           </div>
         `;
+        return;
       }
-      
-      // Nota: lo screen 'stats' è rimasto invariato rispetto alla versione precedente per brevità
     }
 
+    // init
     load();
     render();
+
+    // Previene lo zoom su double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event){
+      const now = Date.now();
+      if(now - lastTouchEnd <= 300) event.preventDefault();
+      lastTouchEnd = now;
+    }, false);
   </script>
 </body>
 </html>
