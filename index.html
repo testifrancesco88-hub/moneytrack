@@ -1,572 +1,717 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MoneyTrack">
-    <meta name="theme-color" content="#111827">
-    <title>MoneyTrack - Conteggio Contanti</title>
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f3f4f6;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            overscroll-behavior: none;
-        }
-        
-        #app {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-        
-        .header {
-            background: #111827;
-            color: white;
-            padding: env(safe-area-inset-top) 16px 16px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .header-green {
-            background: #16a34a;
-        }
-        
-        .header-blue {
-            background: #2563eb;
-        }
-        
-        .header-gray {
-            background: #1f2937;
-        }
-        
-        .logo-container {
-            text-align: center;
-            padding: 40px 20px;
-            background: #111827;
-        }
-        
-        .logo-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 12px;
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .logo-text {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-top: 8px;
-        }
-        
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .list-item {
-            padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .list-item:active {
-            background: #f3f4f6;
-        }
-        
-        .btn {
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn:active {
-            transform: scale(0.95);
-        }
-        
-        .btn-primary {
-            background: #16a34a;
-            color: white;
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-        
-        .display-box {
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .display-label {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-bottom: 4px;
-        }
-        
-        .display-value {
-            font-size: 32px;
-            font-weight: 700;
-        }
-        
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 12px;
-        }
-        
-        .key {
-            aspect-ratio: 1;
-            border: none;
-            border-radius: 12px;
-            font-size: 24px;
-            font-weight: 600;
-            background: #e5e7eb;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-        
-        .key:active {
-            background: #d1d5db;
-            transform: scale(0.95);
-        }
-        
-        .mode-selector {
-            display: flex;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .mode-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: #f3f4f6;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        
-        .mode-btn.active {
-            background: #8b5cf6;
-            color: white;
-        }
-        
-        .field-selector {
-            display: flex;
-            gap: 8px;
-            padding: 8px 12px;
-            justify-content: center;
-        }
-        
-        .field-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            background: #6b7280;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .field-btn.active {
-            background: #8b5cf6;
-        }
-        
-        .info-screen {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .info-box {
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .back-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 4px;
-        }
-        
-        .info-btn {
-            background: #374151;
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MoneyTrack">
+  <meta name="theme-color" content="#111827">
+  <title>MoneyTrack - Conteggio Contanti</title>
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overscroll-behavior: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+
+    .header {
+      background: #111827;
+      color: white;
+      padding: env(safe-area-inset-top) 16px 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-green { background: #16a34a; }
+    .header-blue { background: #2563eb; }
+    .header-gray { background: #1f2937; }
+
+    .logo-container {
+      text-align: center;
+      padding: 40px 20px;
+      background: #111827;
+    }
+
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 8px;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .list-item {
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .list-item:active { background: #f3f4f6; }
+
+    .btn {
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:active { transform: scale(0.95); }
+
+    .btn-primary { background: #16a34a; color: white; }
+    .btn-danger  { background: #dc2626; color: white; }
+    .btn-warning { background: #f59e0b; color: white; }
+
+    .display-box { padding: 20px; text-align: center; }
+
+    .display-label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .display-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .key {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: 600;
+      background: #e5e7eb;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .key:active { background: #d1d5db; transform: scale(0.95); }
+
+    .mode-selector { display: flex; border-bottom: 1px solid #e5e7eb; }
+
+    .mode-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: #f3f4f6;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .mode-btn.active { background: #8b5cf6; color: white; }
+
+    .field-selector {
+      display: flex;
+      gap: 8px;
+      padding: 8px 12px;
+      justify-content: center;
+    }
+
+    .field-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #6b7280;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .field-btn.active { background: #8b5cf6; }
+
+    .info-screen { padding: 40px 20px; text-align: center; }
+
+    .info-box {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .hidden { display: none; }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .info-btn {
+      background: #374151;
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-    <div id="app"></div>
-    
-    <script>
-        const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
-        const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
-        
-        let state = {
-            screen: 'banks',
-            selectedBank: '',
-            selectedEmployee: '',
-            amount: '0',
-            rejected: '0',
-            mode: 'manual',
-            inputField: 'amount',
-            totals: {},
-            lastMachineValue: {}
-        };
-        
-        function getKey(bank, employee) {
-            return `${bank}|||${employee}`;
+  <div id="app"></div>
+
+  <script>
+    const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
+    const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
+
+    let state = {
+      screen: 'banks',
+      selectedBank: '',
+      selectedEmployee: '',
+      amount: '0',
+      rejected: '0',
+      mode: 'manual',
+      inputField: 'amount',
+      totals: {},
+      lastMachineValue: {},
+      lastOp: null,
+      logs: []
+    };
+
+    function getKey(bank, employee) { return `${bank}|||${employee}`; }
+
+    // ===== Persistenza + utils =====
+    const STORAGE_KEY = "moneytrack_state_v1";
+
+    function formatEUR(n) {
+      const x = Number(n) || 0;
+      return `€${x.toFixed(2)}`;
+    }
+
+    function safeParse(v) {
+      const s = (v ?? "0").toString();
+      if (s === "." || s === "") return 0;
+      if (s.endsWith(".")) return parseFloat(s.slice(0, -1)) || 0;
+      return parseFloat(s) || 0;
+    }
+
+    function saveState() {
+      const persist = {
+        totals: state.totals,
+        lastMachineValue: state.lastMachineValue,
+        lastOp: state.lastOp || null,
+        logs: state.logs || []
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(persist));
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        state.totals = data.totals || {};
+        state.lastMachineValue = data.lastMachineValue || {};
+        state.lastOp = data.lastOp || null;
+        state.logs = data.logs || [];
+      } catch (e) {
+        state.totals = {};
+        state.lastMachineValue = {};
+        state.lastOp = null;
+        state.logs = [];
+      }
+    }
+
+    // ===== Statistiche (oggi) =====
+    function startOfTodayLocal() {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function computeTodayStats() {
+      const start = startOfTodayLocal().getTime();
+      const logs = state.logs || [];
+
+      let totalToday = 0;
+      const byBank = {};
+      const byEmp = {};
+
+      for (const e of logs) {
+        const t = new Date(e.ts).getTime();
+        if (isNaN(t) || t < start) continue;
+
+        const delta = Number(e.delta) || 0;
+        totalToday += delta;
+
+        byBank[e.bank] = (byBank[e.bank] || 0) + delta;
+        byEmp[e.emp] = (byEmp[e.emp] || 0) + delta;
+      }
+
+      let topEmp = null;
+      let topVal = -Infinity;
+      for (const [emp, val] of Object.entries(byEmp)) {
+        if (val > topVal) {
+          topVal = val;
+          topEmp = emp;
         }
-        
-        function render() {
-            const app = document.getElementById('app');
-            
-            if (state.screen === 'banks') {
-                app.innerHTML = `
-                    <div class="header">
-                        <div class="logo-container" style="flex: 1; padding: 20px;">
-                            <div class="logo-icon">
-                                <svg viewBox="0 0 40 40" width="40" height="40">
-                                    <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
-                                    <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
-                                    <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
-                                </svg>
-                            </div>
-                            <div class="logo-text">MoneyTrack</div>
-                        </div>
-                        <button class="info-btn" onclick="goToInfo()">ⓘ</button>
-                    </div>
-                    <div class="header header-green">
-                        <span style="font-weight: 600;">Seleziona Banca</span>
-                    </div>
-                    <div class="content">
-                        ${banks.map(bank => `
-                            <div class="list-item" onclick="selectBank('${bank}')">
-                                <span style="font-weight: 500;">${bank}</span>
-                                <span>›</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            } else if (state.screen === 'info') {
-                app.innerHTML = `
-                    <div class="header">
-                        <button class="back-btn" onclick="backFromInfo()">‹</button>
-                        <span style="font-weight: 600;">Informazioni</span>
-                        <div style="width: 32px;"></div>
-                    </div>
-                    <div class="content info-screen">
-                        <div class="logo-icon" style="width: 100px; height: 100px; margin: 0 auto;">
-                            <svg viewBox="0 0 40 40" width="50" height="50">
-                                <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
-                                <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
-                                <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        <h2 style="margin-top: 20px; font-size: 24px;">MoneyTrack</h2>
-                        <p style="color: #6b7280; margin-top: 8px;">v1.0.0</p>
-                        <p style="color: #9ca3af; font-size: 14px; margin-top: 4px;">Sistema di conteggio contanti</p>
-                        <div class="info-box">
-                            <p style="font-size: 12px; margin-bottom: 8px;">Sviluppato da</p>
-                            <p style="font-size: 20px; font-weight: 700;">Francesco Testi</p>
-                        </div>
-                        <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">© 2024 MoneyTrack</p>
-                        <p style="color: #9ca3af; font-size: 12px; margin-top: 4px;">Tutti i diritti riservati</p>
-                    </div>
-                `;
-            } else if (state.screen === 'employees') {
-                app.innerHTML = `
-                    <div class="header header-blue">
-                        <button class="back-btn" onclick="backToBanks()">‹</button>
-                        <span style="font-weight: 600; font-size: 14px;">${state.selectedBank}</span>
-                        <div style="width: 32px;"></div>
-                    </div>
-                    <div class="content">
-                        ${employees.map(emp => {
-                            const key = getKey(state.selectedBank, emp);
-                            const total = state.totals[key] || 0;
-                            return `
-                                <div class="list-item" onclick="selectEmployee('${emp}')">
-                                    <span style="font-weight: 500;">${emp}</span>
-                                    <span style="color: #16a34a; font-weight: 600;">€${total.toFixed(2)}</span>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            } else if (state.screen === 'counter') {
-                const key = getKey(state.selectedBank, state.selectedEmployee);
-                const currentTotal = state.totals[key] || 0;
-                const machineValue = state.lastMachineValue[state.selectedBank] || 0;
-                const amount = parseFloat(state.amount || '0');
-                const rejected = parseFloat(state.rejected || '0');
-                const diff = state.mode === 'auto' ? (amount - machineValue) : 0;
-                const calculatedDiff = state.mode === 'auto' ? diff + rejected : 0;
-                
-                app.innerHTML = `
-                    <div class="header header-gray">
-                        <button class="back-btn" onclick="backToEmployees()">‹</button>
-                        <div style="text-align: center; flex: 1; font-size: 12px;">
-                            <div>${state.selectedBank}</div>
-                            <div style="font-weight: 700;">${state.selectedEmployee}</div>
-                        </div>
-                        <div style="width: 32px;"></div>
-                    </div>
-                    
-                    <div class="mode-selector">
-                        <button class="mode-btn ${state.mode === 'manual' ? 'active' : ''}" onclick="setMode('manual')">MANUALE</button>
-                        <button class="mode-btn ${state.mode === 'auto' ? 'active' : ''}" onclick="setMode('auto')">AUTO DIFF</button>
-                    </div>
-                    
-                    <div class="display-box" style="background: #2563eb; color: white;">
-                        <div class="display-label">TOT. DIPENDENTE</div>
-                        <div class="display-value">€${currentTotal.toFixed(2)}</div>
-                    </div>
-                    
-                    ${state.mode === 'auto' ? `
-                        <div style="background: #4b5563; color: white; padding: 12px; text-align: center; font-size: 12px;">
-                            <div>Selezionatrice: €${machineValue.toFixed(2)}</div>
-                            <div class="field-selector">
-                                <button class="field-btn ${state.inputField === 'amount' ? 'active' : ''}" onclick="setInputField('amount')">Valore Macchina</button>
-                                <button class="field-btn ${state.inputField === 'rejected' ? 'active' : ''}" onclick="setInputField('rejected')">Scartate</button>
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="display-box" style="background: ${state.mode === 'manual' ? '#374151' : '#7c3aed'}; color: white;">
-                        <div class="display-label">${state.mode === 'manual' ? 'IMPORTO' : (state.inputField === 'amount' ? 'VALORE MACCHINA' : 'SCARTATE')}</div>
-                        <div class="display-value">€${(state.inputField === 'amount' ? state.amount : state.rejected)}</div>
-                        ${state.mode === 'auto' && state.inputField === 'amount' && state.amount !== '0' ? `
-                            <div style="font-size: 11px; margin-top: 8px;">
-                                <span style="color: #fbbf24;">Diff: €${diff.toFixed(2)}</span>
-                                ${state.rejected !== '0' ? `<span style="color: #fca5a5;"> + Scart: €${rejected.toFixed(2)}</span>` : ''}
-                                ${state.amount !== '0' || state.rejected !== '0' ? `<span style="color: #86efac;"> = €${calculatedDiff.toFixed(2)}</span>` : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="keypad">
-                        <button class="key" onclick="addDigit('1')">1</button>
-                        <button class="key" onclick="addDigit('2')">2</button>
-                        <button class="key" onclick="addDigit('3')">3</button>
-                        <button class="key" onclick="addDigit('4')">4</button>
-                        <button class="key" onclick="addDigit('5')">5</button>
-                        <button class="key" onclick="addDigit('6')">6</button>
-                        <button class="key" onclick="addDigit('7')">7</button>
-                        <button class="key" onclick="addDigit('8')">8</button>
-                        <button class="key" onclick="addDigit('9')">9</button>
-                        <button class="key" onclick="addDecimal()">.</button>
-                        <button class="key" onclick="addDigit('0')">0</button>
-                        <button class="key" style="background: #dc2626; color: white;" onclick="deleteDigit()">⌫</button>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px;">
-                        <button class="btn btn-warning" onclick="clearInput()">CLEAR</button>
-                        <button class="btn btn-primary" onclick="addToTotal()">✓ OK</button>
-                        <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
-                    </div>
-                    
-                    ${state.mode === 'auto' ? `
-                        <div style="padding: 0 12px 12px;">
-                            <button class="btn" style="width: 100%; background: #7c3aed; color: white;" onclick="resetMachine()">RESET SELEZIONATRICE</button>
-                        </div>
-                    ` : ''}
-                `;
-            }
-        }
-        
-        function selectBank(bank) {
-            state.selectedBank = bank;
-            state.screen = 'employees';
-            render();
-        }
-        
-        function selectEmployee(emp) {
-            state.selectedEmployee = emp;
-            state.screen = 'counter';
-            state.amount = '0';
-            state.rejected = '0';
-            state.inputField = 'amount';
-            render();
-        }
-        
-        function backToBanks() {
-            state.screen = 'banks';
-            state.selectedBank = '';
-            render();
-        }
-        
-        function backToEmployees() {
-            state.screen = 'employees';
-            state.amount = '0';
-            state.rejected = '0';
-            render();
-        }
-        
-        function goToInfo() {
-            state.screen = 'info';
-            render();
-        }
-        
-        function backFromInfo() {
-            state.screen = 'banks';
-            render();
-        }
-        
-        function setMode(mode) {
-            state.mode = mode;
-            state.amount = '0';
-            state.rejected = '0';
-            state.inputField = 'amount';
-            render();
-        }
-        
-        function setInputField(field) {
-            state.inputField = field;
-            render();
-        }
-        
-        function addDigit(digit) {
-            const field = state.inputField;
-            const current = state[field];
-            if (current === '0') {
-                state[field] = digit;
-            } else if (current.length < 8) {
-                state[field] = current + digit;
-            }
-            render();
-        }
-        
-        function addDecimal() {
-            const field = state.inputField;
-            if (!state[field].includes('.')) {
-                state[field] += '.';
-                render();
-            }
-        }
-        
-        function deleteDigit() {
-            const field = state.inputField;
-            if (state[field].length === 1) {
-                state[field] = '0';
-            } else {
-                state[field] = state[field].slice(0, -1);
-            }
-            render();
-        }
-        
-        function clearInput() {
-            state[state.inputField] = '0';
-            render();
-        }
-        
-        function addToTotal() {
-            const key = getKey(state.selectedBank, state.selectedEmployee);
-            const currentTotal = state.totals[key] || 0;
-            let amountToAdd = 0;
-            
-            if (state.mode === 'manual') {
-                amountToAdd = parseFloat(state.amount || '0');
-            } else {
-                const currentMachineValue = parseFloat(state.amount || '0');
-                const rejectedAmount = parseFloat(state.rejected || '0');
-                const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-                amountToAdd = (currentMachineValue - lastValue) + rejectedAmount;
-                state.lastMachineValue[state.selectedBank] = currentMachineValue;
-            }
-            
-            state.totals[key] = currentTotal + amountToAdd;
-            state.amount = '0';
-            state.rejected = '0';
-            state.inputField = 'amount';
-            render();
-        }
-        
-        function resetTotal() {
-            const key = getKey(state.selectedBank, state.selectedEmployee);
-            state.totals[key] = 0;
-            state.amount = '0';
-            state.rejected = '0';
-            render();
-        }
-        
-        function resetMachine() {
-            state.lastMachineValue[state.selectedBank] = 0;
-            state.amount = '0';
-            state.rejected = '0';
-            render();
-        }
-        
-        // Inizializza l'app
+      }
+
+      return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+
+      if (state.screen === 'banks') {
+        app.innerHTML = `
+          <div class="header">
+            <div class="logo-container" style="flex: 1; padding: 20px;">
+              <div class="logo-icon">
+                <svg viewBox="0 0 40 40" width="40" height="40">
+                  <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
+                  <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
+                  <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="logo-text">MoneyTrack</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="info-btn" onclick="goToStats()">📊</button>
+              <button class="info-btn" onclick="goToInfo()">ⓘ</button>
+            </div>
+          </div>
+          <div class="header header-green">
+            <span style="font-weight: 600;">Seleziona Banca</span>
+          </div>
+          <div class="content">
+            ${banks.map(bank => `
+              <div class="list-item" onclick="selectBank('${bank}')">
+                <span style="font-weight: 500;">${bank}</span>
+                <span>›</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+      } else if (state.screen === 'info') {
+        app.innerHTML = `
+          <div class="header">
+            <button class="back-btn" onclick="backFromInfo()">‹</button>
+            <span style="font-weight: 600;">Informazioni</span>
+            <div style="width: 32px;"></div>
+          </div>
+          <div class="content info-screen">
+            <div class="logo-icon" style="width: 100px; height: 100px; margin: 0 auto;">
+              <svg viewBox="0 0 40 40" width="50" height="50">
+                <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
+                <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
+                <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
+              </svg>
+            </div>
+            <h2 style="margin-top: 20px; font-size: 24px;">MoneyTrack</h2>
+            <p style="color: #6b7280; margin-top: 8px;">v1.0.0</p>
+            <p style="color: #9ca3af; font-size: 14px; margin-top: 4px;">Sistema di conteggio contanti</p>
+            <div class="info-box">
+              <p style="font-size: 12px; margin-bottom: 8px;">Sviluppato da</p>
+              <p style="font-size: 20px; font-weight: 700;">Francesco Testi</p>
+            </div>
+            <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">© 2024 MoneyTrack</p>
+            <p style="color: #9ca3af; font-size: 12px; margin-top: 4px;">Tutti i diritti riservati</p>
+          </div>
+        `;
+
+      } else if (state.screen === 'stats') {
+        const s = computeTodayStats();
+        const banksRows = Object.entries(s.byBank)
+          .sort((a,b) => b[1]-a[1])
+          .map(([bank, val]) => `
+            <div class="list-item">
+              <span style="font-weight:500;">${bank}</span>
+              <span style="color:#16a34a; font-weight:700;">${formatEUR(val)}</span>
+            </div>
+          `).join('');
+
+        const topText = s.topEmp ? `${s.topEmp} — ${formatEUR(s.topVal)}` : "Nessun movimento oggi";
+
+        app.innerHTML = `
+          <div class="header header-gray">
+            <button class="back-btn" onclick="backFromStats()">‹</button>
+            <span style="font-weight: 600;">Statistiche (Oggi)</span>
+            <div style="width: 32px;"></div>
+          </div>
+
+          <div class="content">
+            <div class="display-box" style="background:#111827; color:white;">
+              <div class="display-label">TOTALE GIORNALIERO</div>
+              <div class="display-value">${formatEUR(s.totalToday)}</div>
+            </div>
+
+            <div class="display-box" style="background:#7c3aed; color:white;">
+              <div class="display-label">CHI HA CONTATO DI PIÙ 👀</div>
+              <div style="font-size:18px; font-weight:800;">${topText}</div>
+            </div>
+
+            <div style="padding:12px; font-weight:800; color:#111827;">Totale per banca (oggi)</div>
+            ${banksRows || `<div style="padding:12px; color:#6b7280;">Nessun dato per oggi.</div>`}
+          </div>
+        `;
+
+      } else if (state.screen === 'employees') {
+        app.innerHTML = `
+          <div class="header header-blue">
+            <button class="back-btn" onclick="backToBanks()">‹</button>
+            <span style="font-weight: 600; font-size: 14px;">${state.selectedBank}</span>
+            <div style="width: 32px;"></div>
+          </div>
+          <div class="content">
+            ${employees.map(emp => {
+              const key = getKey(state.selectedBank, emp);
+              const total = state.totals[key] || 0;
+              return `
+                <div class="list-item" onclick="selectEmployee('${emp}')">
+                  <span style="font-weight: 500;">${emp}</span>
+                  <span style="color: #16a34a; font-weight: 600;">${formatEUR(total)}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+      } else if (state.screen === 'counter') {
+        const key = getKey(state.selectedBank, state.selectedEmployee);
+        const currentTotal = state.totals[key] || 0;
+
+        const lastValue = state.lastMachineValue[state.selectedBank] || 0; // ultimo memorizzato
+        const amount = safeParse(state.amount);      // valore macchina attuale (input)
+        const rejected = safeParse(state.rejected);  // scartate
+        const diff = state.mode === 'auto' ? (amount - lastValue) : 0;
+        const calculatedDiff = state.mode === 'auto' ? (diff + rejected) : 0;
+
+        app.innerHTML = `
+          <div class="header header-gray">
+            <button class="back-btn" onclick="backToEmployees()">‹</button>
+            <div style="text-align: center; flex: 1; font-size: 12px;">
+              <div>${state.selectedBank}</div>
+              <div style="font-weight: 700;">${state.selectedEmployee}</div>
+            </div>
+            <div style="width: 32px;"></div>
+          </div>
+
+          <div class="mode-selector">
+            <button class="mode-btn ${state.mode === 'manual' ? 'active' : ''}" onclick="setMode('manual')">MANUALE</button>
+            <button class="mode-btn ${state.mode === 'auto' ? 'active' : ''}" onclick="setMode('auto')">AUTO DIFF</button>
+          </div>
+
+          <div class="display-box" style="background: #2563eb; color: white;">
+            <div class="display-label">TOT. DIPENDENTE</div>
+            <div class="display-value">${formatEUR(currentTotal)}</div>
+          </div>
+
+          ${state.mode === 'auto' ? `
+            <div style="background: #4b5563; color: white; padding: 12px; text-align: center; font-size: 12px;">
+              <div>Selezionatrice (ultimo): ${formatEUR(lastValue)}</div>
+              <div class="field-selector">
+                <button class="field-btn ${state.inputField === 'amount' ? 'active' : ''}" onclick="setInputField('amount')">Valore Macchina</button>
+                <button class="field-btn ${state.inputField === 'rejected' ? 'active' : ''}" onclick="setInputField('rejected')">Scartate</button>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="display-box" style="background: ${state.mode === 'manual' ? '#374151' : '#7c3aed'}; color: white;">
+            <div class="display-label">${state.mode === 'manual' ? 'IMPORTO' : (state.inputField === 'amount' ? 'VALORE MACCHINA' : 'SCARTATE')}</div>
+            <div class="display-value">€${(state.inputField === 'amount' ? state.amount : state.rejected)}</div>
+            ${state.mode === 'auto' && state.inputField === 'amount' && state.amount !== '0' ? `
+              <div style="font-size: 11px; margin-top: 8px;">
+                <span style="color: #fbbf24;">Diff: ${formatEUR(diff)}</span>
+                ${state.rejected !== '0' ? `<span style="color: #fca5a5;"> + Scart: ${formatEUR(rejected)}</span>` : ''}
+                ${(state.amount !== '0' || state.rejected !== '0') ? `<span style="color: #86efac;"> = ${formatEUR(calculatedDiff)}</span>` : ''}
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="keypad">
+            <button class="key" onclick="addDigit('1')">1</button>
+            <button class="key" onclick="addDigit('2')">2</button>
+            <button class="key" onclick="addDigit('3')">3</button>
+            <button class="key" onclick="addDigit('4')">4</button>
+            <button class="key" onclick="addDigit('5')">5</button>
+            <button class="key" onclick="addDigit('6')">6</button>
+            <button class="key" onclick="addDigit('7')">7</button>
+            <button class="key" onclick="addDigit('8')">8</button>
+            <button class="key" onclick="addDigit('9')">9</button>
+            <button class="key" onclick="addDecimal()">.</button>
+            <button class="key" onclick="addDigit('0')">0</button>
+            <button class="key" style="background: #dc2626; color: white;" onclick="deleteDigit()">⌫</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 12px;">
+            <button class="btn" style="background:#6b7280; color:white;" onclick="undoLast()">UNDO</button>
+            <button class="btn btn-warning" onclick="clearInput()">CLEAR</button>
+            <button class="btn btn-primary" onclick="addToTotal()">✓ OK</button>
+            <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
+          </div>
+
+          ${state.mode === 'auto' ? `
+            <div style="padding: 0 12px 12px;">
+              <button class="btn" style="width: 100%; background: #7c3aed; color: white;" onclick="resetMachine()">RESET SELEZIONATRICE</button>
+            </div>
+          ` : ''}
+        `;
+      }
+    }
+
+    function selectBank(bank) {
+      state.selectedBank = bank;
+      state.screen = 'employees';
+      render();
+    }
+
+    function selectEmployee(emp) {
+      state.selectedEmployee = emp;
+      state.screen = 'counter';
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      render();
+    }
+
+    function backToBanks() {
+      state.screen = 'banks';
+      state.selectedBank = '';
+      render();
+    }
+
+    function backToEmployees() {
+      state.screen = 'employees';
+      state.amount = '0';
+      state.rejected = '0';
+      render();
+    }
+
+    function goToInfo() {
+      state.screen = 'info';
+      render();
+    }
+
+    function backFromInfo() {
+      state.screen = 'banks';
+      render();
+    }
+
+    function goToStats() {
+      state.screen = 'stats';
+      render();
+    }
+
+    function backFromStats() {
+      state.screen = 'banks';
+      render();
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      render();
+    }
+
+    function setInputField(field) {
+      state.inputField = field;
+      render();
+    }
+
+    function addDigit(digit) {
+      const field = state.inputField;
+      const current = state[field];
+      if (current === '0') {
+        state[field] = digit;
+      } else if (current.length < 8) {
+        state[field] = current + digit;
+      }
+      render();
+    }
+
+    function addDecimal() {
+      const field = state.inputField;
+      if (!state[field].includes('.')) {
+        state[field] += '.';
         render();
-        
-        // Previene lo zoom su double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-    </script>
+      }
+    }
+
+    function deleteDigit() {
+      const field = state.inputField;
+      if (state[field].length === 1) {
+        state[field] = '0';
+      } else {
+        state[field] = state[field].slice(0, -1);
+      }
+      render();
+    }
+
+    function clearInput() {
+      state[state.inputField] = '0';
+      render();
+    }
+
+    function addToTotal() {
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const currentTotal = state.totals[key] || 0;
+      let amountToAdd = 0;
+
+      if (state.mode === 'manual') {
+        amountToAdd = safeParse(state.amount);
+        state.lastOp = {
+          key,
+          delta: amountToAdd,
+          bank: state.selectedBank,
+          prevMachine: state.lastMachineValue[state.selectedBank] || 0
+        };
+      } else {
+        const currentMachineValue = safeParse(state.amount);
+        const rejectedAmount = safeParse(state.rejected);
+        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
+
+        amountToAdd = (currentMachineValue - lastValue) + rejectedAmount;
+
+        state.lastOp = {
+          key,
+          delta: amountToAdd,
+          bank: state.selectedBank,
+          prevMachine: lastValue,
+          newMachine: currentMachineValue
+        };
+
+        state.lastMachineValue[state.selectedBank] = currentMachineValue;
+      }
+
+      state.totals[key] = currentTotal + amountToAdd;
+
+      // LOG movimento per statistiche
+      state.logs = state.logs || [];
+      state.logs.push({
+        ts: new Date().toISOString(),
+        bank: state.selectedBank,
+        emp: state.selectedEmployee,
+        delta: amountToAdd
+      });
+
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+
+      saveState();
+      render();
+    }
+
+    function undoLast() {
+      const op = state.lastOp;
+      if (!op || !op.key) return;
+
+      const cur = state.totals[op.key] || 0;
+      state.totals[op.key] = cur - (op.delta || 0);
+
+      if (state.mode === 'auto' && op.bank) {
+        state.lastMachineValue[op.bank] = op.prevMachine || 0;
+      }
+
+      // Rimuove l’ultimo log (se corrisponde)
+      if (state.logs && state.logs.length) {
+        const last = state.logs[state.logs.length - 1];
+        if (last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp)) {
+          state.logs.pop();
+        }
+      }
+
+      state.lastOp = null;
+
+      saveState();
+      render();
+    }
+
+    function resetTotal() {
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      state.totals[key] = 0;
+      state.amount = '0';
+      state.rejected = '0';
+      state.lastOp = null;
+      saveState();
+      render();
+    }
+
+    function resetMachine() {
+      state.lastMachineValue[state.selectedBank] = 0;
+      state.amount = '0';
+      state.rejected = '0';
+      state.lastOp = null;
+      saveState();
+      render();
+    }
+
+    // Inizializza l'app
+    loadState();
+    render();
+
+    // Previene lo zoom su double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
 </body>
 </html>
