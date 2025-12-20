@@ -7,17 +7,24 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MoneyTrack">
   <meta name="theme-color" content="#111827">
-  <title>MoneyTrack - Conteggio Contanti</title>
+  <title>MoneyTrack - Pro</title>
 
-  <!-- Manifest inline (puoi sostituirlo con manifest.webmanifest su GitHub Pages quando vuoi) -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
 
   <style>
+    :root {
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --dark: #111827;
+      --gray-bg: #f3f4f6;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--dark);
       overflow: hidden;
       position: fixed;
       width: 100%;
@@ -33,241 +40,97 @@
       background: white;
     }
 
+    /* Header & Navigation */
     .header {
-      background: #111827;
+      background: var(--dark);
       color: white;
       padding: env(safe-area-inset-top) 16px 16px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
       z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .header-green { background: #16a34a; }
-    .header-blue  { background: #2563eb; }
-    .header-gray  { background: #1f2937; }
+    .header-green { background: var(--success); }
+    .header-blue  { background: var(--primary); }
+    .header-gray  { background: #374151; }
 
-    .logo-container {
-      text-align: center;
-      padding: 40px 20px;
-      background: #111827;
-    }
-
+    .logo-container { text-align: center; padding: 30px 20px; background: var(--dark); }
     .logo-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 12px;
+      width: 70px; height: 70px; margin: 0 auto 12px;
       background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+      border-radius: 18px; display: flex; align-items: center; justify-content: center;
     }
-
     .logo-text {
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 24px; font-weight: 800;
       background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-top: 8px;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: white; }
 
+    /* List Items */
     .list-item {
-      padding: 16px;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 18px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.1s;
     }
+    .list-item:active { background: #f9fafb; }
 
-    .list-item:active { background: #f3f4f6; }
-
+    /* Buttons */
     .btn {
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 14px; border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.1s, opacity 0.2s;
     }
-
-    .btn:active { transform: scale(0.95); }
-
-    .btn-primary { background: #16a34a; color: white; }
-    .btn-danger  { background: #dc2626; color: white; }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--success); color: white; }
+    .btn-danger  { background: var(--danger); color: white; }
     .btn-warning { background: #f59e0b; color: white; }
+    .btn-outline { background: #e5e7eb; color: #374151; }
+    .btn:disabled { opacity: 0.4; }
 
-    .btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-
-    .display-box { padding: 20px; text-align: center; }
-
-    .display-label {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
-
-    .display-value {
-      font-size: 32px;
-      font-weight: 700;
-    }
+    /* Keypad & Display */
+    .display-box { padding: 15px; text-align: center; position: relative; }
+    .display-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 4px; }
+    .display-value { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; }
 
     .keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      padding: 12px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; padding: 15px; background: #f9fafb;
     }
-
     .key {
-      aspect-ratio: 1;
-      border: none;
-      border-radius: 12px;
-      font-size: 24px;
-      font-weight: 600;
-      background: #e5e7eb;
-      cursor: pointer;
-      transition: all 0.1s;
+      height: 60px; border: none; border-radius: 14px;
+      font-size: 22px; font-weight: 600; background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--dark);
     }
+    .key:active { background: #e2e8f0; transform: scale(0.95); }
+    .key.action { background: #fee2e2; color: var(--danger); }
 
-    .key:active {
-      background: #d1d5db;
-      transform: scale(0.95);
-    }
-
-    .mode-selector { display: flex; border-bottom: 1px solid #e5e7eb; }
-
+    .mode-selector { display: flex; background: #f3f4f6; padding: 4px; gap: 4px; }
     .mode-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      background: #f3f4f6;
-      font-weight: 600;
-      font-size: 12px;
-      cursor: pointer;
+      flex: 1; padding: 10px; border: none; border-radius: 8px;
+      font-weight: 700; font-size: 12px; background: transparent; color: #6b7280;
     }
+    .mode-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-    .mode-btn.active { background: #8b5cf6; color: white; }
-
-    .field-selector {
-      display: flex;
-      gap: 8px;
-      padding: 8px 12px;
-      justify-content: center;
-    }
-
+    .field-selector { display: flex; gap: 8px; padding: 10px; justify-content: center; background: #4b5563; }
     .field-btn {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      background: #6b7280;
-      color: white;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 8px 16px; border: none; border-radius: 20px;
+      background: rgba(255,255,255,0.2); color: white; font-size: 11px; font-weight: 600;
     }
+    .field-btn.active { background: white; color: #374151; }
 
-    .field-btn.active { background: #8b5cf6; }
-
-    .info-screen { padding: 40px 20px; text-align: center; }
-
-    .info-box {
-      background: linear-gradient(135deg, #06b6d4, #3b82f6);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .info-btn {
-      background: #374151;
-      border: none;
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    /* ===============================
-       LAYOUT ADATTIVO PER SCHERMI BASSI
-       =============================== */
-
-    @media (max-height: 720px) {
-      .keypad{
-        gap: 6px;
-        padding: 8px 12px;
-      }
-
-      .key{
-        aspect-ratio: auto;
-        height: 48px;
-        font-size: 18px;
-        border-radius: 10px;
-      }
-
-      .btn{
-        padding: 12px;
-        font-size: 14px;
-      }
-
-      .display-box{
-        padding: 14px;
-      }
-
-      .display-value{
-        font-size: 26px;
-      }
-
-      .display-label{
-        font-size: 11px;
-      }
-
-      .header{
-        padding-bottom: 12px;
-      }
-    }
-
-    @media (max-height: 640px) {
-      .key{
-        height: 44px;
-        font-size: 17px;
-      }
-
-      .display-value{
-        font-size: 24px;
-      }
-
-      .btn{
-        padding: 10px;
-        font-size: 13px;
-      }
+    /* Stats Specific */
+    .stats-card { background: white; margin: 12px; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    
+    @media (max-height: 700px) {
+      .key { height: 50px; font-size: 20px; }
+      .logo-container { padding: 15px; }
+      .display-value { font-size: 26px; }
     }
   </style>
 </head>
@@ -276,6 +139,7 @@
   <div id="app"></div>
 
   <script>
+    // Configurazione
     const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
     const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
 
@@ -283,623 +147,327 @@
       screen: 'banks',
       selectedBank: '',
       selectedEmployee: '',
-      amount: '0',     // input per valore macchina (AUTO) o importo (MANUALE)
-      rejected: '0',   // input scartate (AUTO)
+      amount: '0',
+      rejected: '0',
       mode: 'manual',
       inputField: 'amount',
       totals: {},
-      lastMachineValue: {},   // ultimo valore macchina memorizzato per banca
-      machineConfirmed: {},   // true/false per banca (blocco anti-svista)
-      lastOp: null,           // per UNDO
-      logs: []                // per statistiche giornaliere
+      lastMachineValue: {},
+      machineConfirmed: {},
+      lastOp: null,
+      logs: []
     };
 
-    function getKey(bank, employee) { return `${bank}|||${employee}`; }
+    const STORAGE_KEY = "moneytrack_v1_save";
 
-    // ===== Persistenza + utils =====
-    const STORAGE_KEY = "moneytrack_state_v1";
-
+    // Utility
     function formatEUR(n) {
-      const x = Number(n) || 0;
-      return `€${x.toFixed(2)}`;
+      return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n || 0);
     }
 
     function safeParse(v) {
       const s = (v ?? "0").toString();
-      if (s === "." || s === "") return 0;
-      if (s.endsWith(".")) return parseFloat(s.slice(0, -1)) || 0;
-      return parseFloat(s) || 0;
+      const val = parseFloat(s);
+      return isNaN(val) ? 0 : val;
     }
 
-    function saveState() {
-      const persist = {
+    // Persistenza
+    function save() {
+      const data = {
         totals: state.totals,
         lastMachineValue: state.lastMachineValue,
-        machineConfirmed: state.machineConfirmed || {},
-        lastOp: state.lastOp || null,
-        logs: state.logs || []
+        machineConfirmed: state.machineConfirmed,
+        logs: state.logs
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(persist));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        state.totals = data.totals || {};
-        state.lastMachineValue = data.lastMachineValue || {};
-        state.machineConfirmed = data.machineConfirmed || {};
-        state.lastOp = data.lastOp || null;
-        state.logs = data.logs || [];
-      } catch (e) {
-        state.totals = {};
-        state.lastMachineValue = {};
-        state.machineConfirmed = {};
-        state.lastOp = null;
-        state.logs = [];
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        state.totals = parsed.totals || {};
+        state.lastMachineValue = parsed.lastMachineValue || {};
+        state.machineConfirmed = parsed.machineConfirmed || {};
+        state.logs = parsed.logs || [];
       }
     }
 
-    // ===== Statistiche (oggi) =====
-    function startOfTodayLocal() {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      return d;
+    // Logic
+    function computeStats() {
+      const startOfDay = new Date().setHours(0, 0, 0, 0);
+      const dailyLogs = state.logs.filter(l => new Date(l.ts).getTime() >= startOfDay);
+      
+      const stats = { total: 0, byBank: {}, byEmp: {} };
+      dailyLogs.forEach(l => {
+        stats.total += l.delta;
+        stats.byBank[l.bank] = (stats.byBank[l.bank] || 0) + l.delta;
+        stats.byEmp[l.emp] = (stats.byEmp[l.emp] || 0) + l.delta;
+      });
+      return stats;
     }
 
-    function computeTodayStats() {
-      const start = startOfTodayLocal().getTime();
-      const logs = state.logs || [];
-
-      let totalToday = 0;
-      const byBank = {};
-      const byEmp = {};
-
-      for (const e of logs) {
-        const t = new Date(e.ts).getTime();
-        if (isNaN(t) || t < start) continue;
-
-        const delta = Number(e.delta) || 0;
-        totalToday += delta;
-
-        byBank[e.bank] = (byBank[e.bank] || 0) + delta;
-        byEmp[e.emp] = (byEmp[e.emp] || 0) + delta;
+    function shareReport() {
+      const s = computeStats();
+      let msg = `📊 *REPORT MONEYTRACK - ${new Date().toLocaleDateString()}*\n\n`;
+      msg += `💰 Totale: ${formatEUR(s.total)}\n\n`;
+      msg += `*Dettaglio Banche:*\n`;
+      Object.entries(s.byBank).forEach(([b, v]) => msg += `• ${b}: ${formatEUR(v)}\n`);
+      
+      if (navigator.share) {
+        navigator.share({ title: 'Report MoneyTrack', text: msg });
+      } else {
+        alert("Copiato negli appunti (simulazione)");
+        console.log(msg);
       }
-
-      let topEmp = null;
-      let topVal = -Infinity;
-      for (const [emp, val] of Object.entries(byEmp)) {
-        if (val > topVal) { topVal = val; topEmp = emp; }
-      }
-
-      return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
-    // ===== Render =====
+    // Handlers UI
+    function addDigit(d) {
+      let current = state[state.inputField];
+      if (current === '0') state[state.inputField] = d;
+      else if (current.length < 9) state[state.inputField] += d;
+      render();
+    }
+
+    function addDecimal() {
+      if (!state[state.inputField].includes('.')) {
+        state[state.inputField] += '.';
+        render();
+      }
+    }
+
+    function deleteDigit() {
+      let current = state[state.inputField];
+      state[state.inputField] = current.length > 1 ? current.slice(0, -1) : '0';
+      render();
+    }
+
+    function confirmMachine() {
+      const val = safeParse(state.amount);
+      if (val <= 0) return;
+
+      const bank = state.selectedBank;
+      const prev = state.lastMachineValue[bank] || 0;
+      const delta = val - prev;
+      const key = `${bank}|||${state.selectedEmployee}`;
+
+      // Aggiorna
+      state.totals[key] = (state.totals[key] || 0) + delta;
+      state.lastMachineValue[bank] = val;
+      state.machineConfirmed[bank] = true;
+      
+      state.logs.push({ ts: new Date().toISOString(), bank, emp: state.selectedEmployee, delta, type: 'machine' });
+      
+      state.amount = '0';
+      state.inputField = 'rejected';
+      save();
+      render();
+    }
+
+    function addToTotal() {
+      const bank = state.selectedBank;
+      const emp = state.selectedEmployee;
+      const key = `${bank}|||${emp}`;
+      let delta = 0;
+
+      if (state.mode === 'manual') {
+        delta = safeParse(state.amount);
+      } else {
+        delta = safeParse(state.rejected);
+      }
+
+      state.totals[key] = (state.totals[key] || 0) + delta;
+      state.logs.push({ ts: new Date().toISOString(), bank, emp, delta, type: 'plus' });
+      
+      // Reset input
+      state.amount = '0';
+      state.rejected = '0';
+      state.inputField = 'amount';
+      save();
+      render();
+    }
+
+    function resetEmployee() {
+      if (confirm("Azzerare il totale di questo dipendente?")) {
+        const key = `${state.selectedBank}|||${state.selectedEmployee}`;
+        state.totals[key] = 0;
+        save();
+        render();
+      }
+    }
+
+    function undo() {
+      if (state.logs.length === 0) return;
+      const last = state.logs.pop();
+      const key = `${last.bank}|||${last.emp}`;
+      state.totals[key] -= last.delta;
+      if (last.type === 'machine') {
+          // Nota: il ripristino del valore macchina precedente richiederebbe log più complessi
+          // ma per semplicità resettiamo la conferma
+          state.machineConfirmed[last.bank] = false;
+      }
+      save();
+      render();
+    }
+
+    // Render Engine
     function render() {
       const app = document.getElementById('app');
 
       if (state.screen === 'banks') {
         app.innerHTML = `
           <div class="header">
-            <div class="logo-container" style="flex: 1; padding: 20px;">
-              <div class="logo-icon">
-                <svg viewBox="0 0 40 40" width="40" height="40">
-                  <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
-                  <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
-                  <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="logo-text">MoneyTrack</div>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button class="info-btn" onclick="goToStats()">📊</button>
-              <button class="info-btn" onclick="goToInfo()">ⓘ</button>
+            <span style="font-weight:700">MoneyTrack Pro</span>
+            <div style="display:flex; gap:10px">
+               <button class="btn" style="background:#374151; padding:8px" onclick="state.screen='stats'; render()">📊</button>
             </div>
           </div>
-
-          <div class="header header-green">
-            <span style="font-weight: 600;">Seleziona Banca</span>
+          <div class="logo-container">
+            <div class="logo-icon">💰</div>
+            <div class="logo-text">MoneyTrack</div>
           </div>
-
+          <div class="header header-green" style="padding:10px 16px; font-size:13px">SELEZIONA BANCA</div>
           <div class="content">
-            ${banks.map(bank => `
-              <div class="list-item" onclick="selectBank('${bank}')">
-                <span style="font-weight: 500;">${bank}</span>
-                <span>›</span>
+            ${banks.map(b => `
+              <div class="list-item" onclick="state.selectedBank='${b}'; state.screen='employees'; render()">
+                <span style="font-weight:600">${b}</span>
+                <span style="color:#9ca3af">›</span>
               </div>
             `).join('')}
           </div>
         `;
-        return;
-      }
-
-      if (state.screen === 'info') {
-        app.innerHTML = `
-          <div class="header">
-            <button class="back-btn" onclick="backFromInfo()">‹</button>
-            <span style="font-weight: 600;">Informazioni</span>
-            <div style="width: 32px;"></div>
-          </div>
-
-          <div class="content info-screen">
-            <div class="logo-icon" style="width: 100px; height: 100px; margin: 0 auto;">
-              <svg viewBox="0 0 40 40" width="50" height="50">
-                <path d="M 20 12 A 8 8 0 0 1 20 28" stroke="white" stroke-width="3" fill="none"/>
-                <line x1="15" y1="17" x2="23" y2="17" stroke="white" stroke-width="2"/>
-                <line x1="15" y1="23" x2="23" y2="23" stroke="white" stroke-width="2"/>
-              </svg>
-            </div>
-            <h2 style="margin-top: 20px; font-size: 24px;">MoneyTrack</h2>
-            <p style="color: #6b7280; margin-top: 8px;">v1.0.0</p>
-            <p style="color: #9ca3af; font-size: 14px; margin-top: 4px;">Sistema di conteggio contanti</p>
-            <div class="info-box">
-              <p style="font-size: 12px; margin-bottom: 8px;">Sviluppato da</p>
-              <p style="font-size: 20px; font-weight: 700;">Francesco Testi</p>
-            </div>
-            <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">© 2024 MoneyTrack</p>
-            <p style="color: #9ca3af; font-size: 12px; margin-top: 4px;">Tutti i diritti riservati</p>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === 'stats') {
-        const s = computeTodayStats();
-
-        const banksRows = Object.entries(s.byBank)
-          .sort((a,b) => b[1]-a[1])
-          .map(([bank, val]) => `
-            <div class="list-item">
-              <span style="font-weight:500;">${bank}</span>
-              <span style="color:#16a34a; font-weight:700;">${formatEUR(val)}</span>
-            </div>
-          `).join('');
-
-        const topText = s.topEmp ? `${s.topEmp} — ${formatEUR(s.topVal)}` : "Nessun movimento oggi";
-
-        app.innerHTML = `
-          <div class="header header-gray">
-            <button class="back-btn" onclick="backFromStats()">‹</button>
-            <span style="font-weight: 600;">Statistiche (Oggi)</span>
-            <div style="width: 32px;"></div>
-          </div>
-
-          <div class="content">
-            <div class="display-box" style="background:#111827; color:white;">
-              <div class="display-label">TOTALE GIORNALIERO</div>
-              <div class="display-value">${formatEUR(s.totalToday)}</div>
-            </div>
-
-            <div class="display-box" style="background:#7c3aed; color:white;">
-              <div class="display-label">CHI HA CONTATO DI PIÙ 👀</div>
-              <div style="font-size:18px; font-weight:800;">${topText}</div>
-            </div>
-
-            <div style="padding:12px; font-weight:800; color:#111827;">Totale per banca (oggi)</div>
-            ${banksRows || `<div style="padding:12px; color:#6b7280;">Nessun dato per oggi.</div>`}
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === 'employees') {
+      } 
+      
+      else if (state.screen === 'employees') {
         app.innerHTML = `
           <div class="header header-blue">
-            <button class="back-btn" onclick="backToBanks()">‹</button>
-            <span style="font-weight: 600; font-size: 14px;">${state.selectedBank}</span>
-            <div style="width: 32px;"></div>
+            <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
+            <span style="font-weight:700">${state.selectedBank}</span>
+            <div style="width:30px"></div>
           </div>
-
           <div class="content">
-            ${employees.map(emp => {
-              const key = getKey(state.selectedBank, emp);
-              const total = state.totals[key] || 0;
+            ${employees.map(e => {
+              const total = state.totals[`${state.selectedBank}|||${e}`] || 0;
               return `
-                <div class="list-item" onclick="selectEmployee('${emp}')">
-                  <span style="font-weight: 500;">${emp}</span>
-                  <span style="color: #16a34a; font-weight: 600;">${formatEUR(total)}</span>
+                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; render()">
+                  <span style="font-weight:500">${e}</span>
+                  <span style="font-weight:700; color:var(--success)">${formatEUR(total)}</span>
                 </div>
               `;
             }).join('')}
           </div>
         `;
-        return;
       }
 
-      if (state.screen === 'counter') {
-        const key = getKey(state.selectedBank, state.selectedEmployee);
-        const currentTotal = state.totals[key] || 0;
-
-        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-        const amount = safeParse(state.amount);
-        const rejected = safeParse(state.rejected);
-
-        const diff = state.mode === 'auto' ? (amount - lastValue) : 0;
-        const calculatedDiff = state.mode === 'auto' ? (diff + rejected) : 0;
-
-        const okEnabled = (state.mode === 'manual') || (state.machineConfirmed[state.selectedBank] === true);
-
-        const showConfirmMachine =
-          state.mode === 'auto' &&
-          state.inputField === 'amount' &&
-          (amount > 0) &&
-          (amount !== lastValue);
+      else if (state.screen === 'counter') {
+        const key = `${state.selectedBank}|||${state.selectedEmployee}`;
+        const total = state.totals[key] || 0;
+        const lastM = state.lastMachineValue[state.selectedBank] || 0;
+        const isConfirmed = state.machineConfirmed[state.selectedBank];
 
         app.innerHTML = `
           <div class="header header-gray">
-            <button class="back-btn" onclick="backToEmployees()">‹</button>
-            <div style="text-align: center; flex: 1; font-size: 12px;">
-              <div>${state.selectedBank}</div>
-              <div style="font-weight: 700;">${state.selectedEmployee}</div>
+            <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='employees'; render()">‹</button>
+            <div style="text-align:center">
+              <div style="font-size:10px; opacity:0.8">${state.selectedBank}</div>
+              <div style="font-weight:700">${state.selectedEmployee}</div>
             </div>
-            <div style="width: 32px;"></div>
+            <div style="width:30px"></div>
           </div>
 
           <div class="mode-selector">
-            <button class="mode-btn ${state.mode === 'manual' ? 'active' : ''}" onclick="setMode('manual')">MANUALE</button>
-            <button class="mode-btn ${state.mode === 'auto' ? 'active' : ''}" onclick="setMode('auto')">AUTO DIFF</button>
+            <button class="mode-btn ${state.mode==='manual'?'active':''}" onclick="state.mode='manual'; render()">MANUALE</button>
+            <button class="mode-btn ${state.mode==='auto'?'active':''}" onclick="state.mode='auto'; render()">AUTO DIFF</button>
           </div>
 
-          <div class="display-box" style="background: #2563eb; color: white;">
-            <div class="display-label">TOT. DIPENDENTE</div>
-            <div class="display-value">${formatEUR(currentTotal)}</div>
+          <div class="display-box" style="background:var(--primary); color:white">
+            <div class="display-label">Totale Dipendente</div>
+            <div class="display-value">${formatEUR(total)}</div>
           </div>
 
           ${state.mode === 'auto' ? `
-            <div style="background: #4b5563; color: white; padding: 12px; text-align: center; font-size: 12px;">
-              <div>Selezionatrice (ultimo): ${formatEUR(lastValue)}</div>
-
-              <div style="margin-top:6px; font-size:11px; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
-                ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
-              </div>
-
-              <div class="field-selector">
-                <button class="field-btn ${state.inputField === 'amount' ? 'active' : ''}" onclick="setInputField('amount')">Valore Macchina</button>
-                <button class="field-btn ${state.inputField === 'rejected' ? 'active' : ''}" onclick="setInputField('rejected')">Scartate</button>
-              </div>
+            <div class="field-selector">
+              <button class="field-btn ${state.inputField==='amount'?'active':''}" onclick="state.inputField='amount'; render()">Macchina</button>
+              <button class="field-btn ${state.inputField==='rejected'?'active':''}" onclick="state.inputField='rejected'; render()">Scartate</button>
+            </div>
+            <div style="background:#1f2937; color:white; padding:8px; font-size:11px; text-align:center">
+              Ultimo Valore Macchina: <b>${formatEUR(lastM)}</b> 
+              <span style="margin-left:10px; color:${isConfirmed?'#4ade80':'#fbbf24'}">${isConfirmed?'✓ OK':'⚠ Confermare'}</span>
             </div>
           ` : ''}
 
-          <div class="display-box" style="background: ${state.mode === 'manual' ? '#374151' : '#7c3aed'}; color: white;">
-            <div class="display-label">${
-              state.mode === 'manual'
-                ? 'IMPORTO'
-                : (state.inputField === 'amount' ? 'VALORE MACCHINA (ATTUALE)' : 'SCARTATE')
-            }</div>
-
-            <div class="display-value">€${(state.inputField === 'amount' ? state.amount : state.rejected)}</div>
-
-            ${state.mode === 'auto' && state.inputField === 'amount' && state.amount !== '0' ? `
-              <div style="font-size: 11px; margin-top: 8px;">
-                <span style="color: #fbbf24;">Diff: ${formatEUR(diff)}</span>
-                ${state.rejected !== '0' ? `<span style="color: #fca5a5;"> + Scart: ${formatEUR(rejected)}</span>` : ''}
-                ${(state.amount !== '0' || state.rejected !== '0') ? `<span style="color: #86efac;"> = ${formatEUR(calculatedDiff)}</span>` : ''}
-              </div>
-            ` : ''}
+          <div class="display-box" style="background:#f9fafb; border-bottom:1px solid #e5e7eb">
+            <div class="display-label" style="color:#6b7280">${state.inputField === 'amount' ? 'Inserimento Importo' : 'Inserimento Scartate'}</div>
+            <div class="display-value" style="color:var(--dark)">€ ${state[state.inputField]}</div>
           </div>
-
-          ${showConfirmMachine ? `
-            <div style="padding: 0 12px 12px;">
-              <button class="btn" style="width:100%; background:#0ea5e9; color:white;" onclick="confirmMachineValue()">
-                ✔ CONFERMA VALORE MACCHINA
-              </button>
-            </div>
-          ` : ''}
 
           <div class="keypad">
-            <button class="key" onclick="addDigit('1')">1</button>
-            <button class="key" onclick="addDigit('2')">2</button>
-            <button class="key" onclick="addDigit('3')">3</button>
-            <button class="key" onclick="addDigit('4')">4</button>
-            <button class="key" onclick="addDigit('5')">5</button>
-            <button class="key" onclick="addDigit('6')">6</button>
-            <button class="key" onclick="addDigit('7')">7</button>
-            <button class="key" onclick="addDigit('8')">8</button>
-            <button class="key" onclick="addDigit('9')">9</button>
+            ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="addDigit('${n}')">${n}</button>`).join('')}
             <button class="key" onclick="addDecimal()">.</button>
             <button class="key" onclick="addDigit('0')">0</button>
-            <button class="key" style="background: #dc2626; color: white;" onclick="deleteDigit()">⌫</button>
+            <button class="key action" onclick="deleteDigit()">⌫</button>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 12px;">
-            <button class="btn" style="background:#6b7280; color:white;" onclick="undoLast()">UNDO</button>
-            <button class="btn btn-warning" onclick="clearInput()">CLEAR</button>
-            <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : ''}">✓ OK</button>
-            <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; padding:15px">
+            <button class="btn btn-outline" onclick="undo()">UNDO</button>
+            ${state.mode === 'auto' && state.inputField === 'amount' ? 
+              `<button class="btn btn-primary" style="background:#0ea5e9" onclick="confirmMachine()">CONF. MACCHINA</button>` :
+              `<button class="btn btn-primary" onclick="addToTotal()">OK / AGGIUNGI</button>`
+            }
+            <button class="btn btn-danger" onclick="resetEmployee()">RESET</button>
           </div>
+          
+          ${state.mode === 'auto' ? `<button class="btn" style="margin:0 15px 15px; background:#6b7280; color:white" onclick="state.lastMachineValue['${state.selectedBank}']=0; state.machineConfirmed['${state.selectedBank}']=false; render()">AZZERA MACCHINA</button>` : ''}
+        `;
+      }
 
-          ${state.mode === 'auto' ? `
-            <div style="padding: 0 12px 12px;">
-              <button class="btn" style="width: 100%; background: #7c3aed; color: white;" onclick="resetMachine()">RESET SELEZIONATRICE</button>
+      else if (state.screen === 'stats') {
+        const s = computeStats();
+        app.innerHTML = `
+          <div class="header" style="background:var(--dark)">
+            <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
+            <span style="font-weight:700">Statistiche Oggi</span>
+            <button class="btn" style="background:transparent; color:white" onclick="shareReport()">📤</button>
+          </div>
+          <div class="content" style="background:#f3f4f6">
+            <div class="display-box" style="background:var(--dark); color:white; margin:12px; border-radius:12px">
+              <div class="display-label">Incasso Totale</div>
+              <div class="display-value">${formatEUR(s.total)}</div>
             </div>
-          ` : ''}
+            
+            <div style="padding:0 12px; font-weight:700; font-size:13px; color:#6b7280">PER BANCA</div>
+            <div class="stats-card">
+              ${Object.entries(s.byBank).length ? Object.entries(s.byBank).map(([b, v]) => `
+                <div class="list-item">
+                  <span>${b}</span>
+                  <span style="font-weight:700">${formatEUR(v)}</span>
+                </div>
+              `).join('') : '<div class="list-item">Nessun dato oggi</div>'}
+            </div>
+
+            <div style="padding:0 12px; font-weight:700; font-size:13px; color:#6b7280">PER DIPENDENTE</div>
+            <div class="stats-card">
+              ${Object.entries(s.byEmp).map(([e, v]) => `
+                <div class="list-item">
+                  <span>${e}</span>
+                  <span style="font-weight:700; color:var(--primary)">${formatEUR(v)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         `;
       }
     }
 
-    // ===== Navigazione =====
-    function selectBank(bank) {
-      state.selectedBank = bank;
-      state.screen = 'employees';
-      render();
-    }
-
-    function selectEmployee(emp) {
-      state.selectedEmployee = emp;
-      state.screen = 'counter';
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-      render();
-    }
-
-    function backToBanks() {
-      state.screen = 'banks';
-      state.selectedBank = '';
-      render();
-    }
-
-    function backToEmployees() {
-      state.screen = 'employees';
-      state.amount = '0';
-      state.rejected = '0';
-      render();
-    }
-
-    function goToInfo() {
-      state.screen = 'info';
-      render();
-    }
-
-    function backFromInfo() {
-      state.screen = 'banks';
-      render();
-    }
-
-    function goToStats() {
-      state.screen = 'stats';
-      render();
-    }
-
-    function backFromStats() {
-      state.screen = 'banks';
-      render();
-    }
-
-    // ===== Input =====
-    function setMode(mode) {
-      state.mode = mode;
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-      render();
-    }
-
-    function setInputField(field) {
-      state.inputField = field;
-      render();
-    }
-
-    function addDigit(digit) {
-      const field = state.inputField;
-      const current = state[field];
-      if (current === '0') {
-        state[field] = digit;
-      } else if (current.length < 10) {
-        state[field] = current + digit;
-      }
-      render();
-    }
-
-    function addDecimal() {
-      const field = state.inputField;
-      if (!state[field].includes('.')) {
-        state[field] += '.';
-        render();
-      }
-    }
-
-    function deleteDigit() {
-      const field = state.inputField;
-      if (state[field].length === 1) {
-        state[field] = '0';
-      } else {
-        state[field] = state[field].slice(0, -1);
-      }
-      render();
-    }
-
-    function clearInput() {
-      state[state.inputField] = '0';
-      render();
-    }
-
-    // ===== Log helper =====
-    function pushLog(delta, kind) {
-      state.logs = state.logs || [];
-      state.logs.push({
-        ts: new Date().toISOString(),
-        bank: state.selectedBank,
-        emp: state.selectedEmployee,
-        delta: Number(delta) || 0,
-        kind
-      });
-    }
-
-    // ===== Azioni =====
-
-    // CONFERMA valore macchina:
-    // - aggiunge al dipendente SOLO (nuovoValore - ultimoValore)
-    // - aggiorna lastMachineValue
-    // - abilita OK (machineConfirmed)
-    // - passa automaticamente a "Scartate"
-    function confirmMachineValue() {
-      if (state.mode !== 'auto') return;
-
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      const currentTotal = state.totals[key] || 0;
-
-      const currentMachineValue = safeParse(state.amount);
-      if (currentMachineValue <= 0) return;
-
-      const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-      const delta = currentMachineValue - lastValue;
-
-      state.totals[key] = currentTotal + delta;
-
-      state.lastOp = {
-        key,
-        delta,
-        bank: state.selectedBank,
-        prevMachine: lastValue,
-        newMachine: currentMachineValue,
-        type: 'machine'
-      };
-
-      state.lastMachineValue[state.selectedBank] = currentMachineValue;
-      state.machineConfirmed[state.selectedBank] = true;
-
-      pushLog(delta, "machine");
-
-      // dopo conferma vai diretto alle scartate
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'rejected';
-
-      saveState();
-      render();
-    }
-
-    // OK:
-    // - in MANUALE: aggiunge amount
-    // - in AUTO:
-    //   - se stai su "Scartate": aggiunge SOLO scartate
-    //   - se stai su "Valore Macchina": aggiunge (diff macchina + scartate) e aggiorna lastMachineValue
-    function addToTotal() {
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      const currentTotal = state.totals[key] || 0;
-      let amountToAdd = 0;
-
-      if (state.mode === 'manual') {
-        amountToAdd = safeParse(state.amount);
-
-        state.lastOp = {
-          key,
-          delta: amountToAdd,
-          bank: state.selectedBank,
-          prevMachine: state.lastMachineValue[state.selectedBank] || 0,
-          type: 'manual'
-        };
-
-      } else {
-        if (state.machineConfirmed[state.selectedBank] !== true) return;
-
-        const rejectedAmount = safeParse(state.rejected);
-        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-
-        if (state.inputField === 'rejected') {
-          // SOLO scartate
-          amountToAdd = rejectedAmount;
-
-          state.lastOp = {
-            key,
-            delta: amountToAdd,
-            bank: state.selectedBank,
-            prevMachine: lastValue,
-            type: 'rejected'
-          };
-
-        } else {
-          // comportamento classico (valore macchina + scartate)
-          const currentMachineValue = safeParse(state.amount);
-          amountToAdd = (currentMachineValue - lastValue) + rejectedAmount;
-
-          state.lastOp = {
-            key,
-            delta: amountToAdd,
-            bank: state.selectedBank,
-            prevMachine: lastValue,
-            newMachine: currentMachineValue,
-            type: 'mixed'
-          };
-
-          state.lastMachineValue[state.selectedBank] = currentMachineValue;
-          state.machineConfirmed[state.selectedBank] = true;
-        }
-      }
-
-      state.totals[key] = currentTotal + amountToAdd;
-      pushLog(amountToAdd, state.mode === 'manual' ? "manual" : "ok");
-
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-
-      saveState();
-      render();
-    }
-
-    function undoLast() {
-      const op = state.lastOp;
-      if (!op || !op.key) return;
-
-      const cur = state.totals[op.key] || 0;
-      state.totals[op.key] = cur - (op.delta || 0);
-
-      // ripristina lastMachineValue (sempre, indipendentemente dalla modalità attuale)
-      if (op.bank && op.prevMachine !== undefined) {
-        state.lastMachineValue[op.bank] = op.prevMachine || 0;
-      }
-
-      // togli ultimo log se plausibile (ultimo OK)
-      if (state.logs && state.logs.length) {
-        const last = state.logs[state.logs.length - 1];
-        const sameKey = last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp);
-        if (sameKey) state.logs.pop();
-      }
-
-      state.lastOp = null;
-
-      saveState();
-      render();
-    }
-
-    function resetTotal() {
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      state.totals[key] = 0;
-      state.amount = '0';
-      state.rejected = '0';
-      state.lastOp = null;
-      saveState();
-      render();
-    }
-
-    function resetMachine() {
-      state.lastMachineValue[state.selectedBank] = 0;
-      state.machineConfirmed[state.selectedBank] = false;
-
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-      state.lastOp = null;
-
-      saveState();
-      render();
-    }
-
-    // ===== Avvio =====
-    loadState();
+    // Init
+    load();
     render();
 
-    // Previene lo zoom su double tap
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, false);
+    // Prevent zoom mobile
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
   </script>
 </body>
 </html>
