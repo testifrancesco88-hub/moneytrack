@@ -9,12 +9,12 @@
   <meta name="theme-color" content="#111827">
   <title>MoneyTrack - Pro</title>
 
-  <!-- ✅ PWA Icons -->
+  <!-- ✅ PWA Icons (metti i file in: /assets/icons/ ) -->
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/favicon-16x16.png">
 
-  <!-- ✅ Manifest (consigliato: file vero, ma va anche inline) -->
+  <!-- ✅ Manifest (meglio un file manifest.webmanifest, ma anche inline va) -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
 
   <style>
@@ -27,6 +27,12 @@
       --slate:#374151;
       --purple:#7c3aed;
       --cyan:#0ea5e9;
+
+      /* ✅ controlli “una volta sola” quanto croppare e quanta aria dare */
+      --logoZoomHome: 1.18;    /* meno zoom = più aria; più zoom = meno cornice azzurra */
+      --logoZoomHeader: 1.26;  /* header più stretto: un filo più zoom */
+      --logoPadHome: 10px;     /* aria interna (home + info) */
+      --logoPadHeader: 2px;    /* aria interna header */
     }
 
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -54,9 +60,7 @@
       transform:scale(1.02);
       pointer-events:none;
     }
-    .splash-card{
-      display:flex; flex-direction:column; align-items:center; gap:14px;
-    }
+    .splash-card{display:flex; flex-direction:column; align-items:center; gap:14px;}
     .splash-logo{
       width:92px; height:92px;
       border-radius:24px;
@@ -64,6 +68,13 @@
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
+      padding: var(--logoPadHome);
+    }
+    .splash-logo img{
+      width:100%;height:100%;
+      object-fit:cover;
+      transform:scale(var(--logoZoomHome));
+      display:block;
     }
     .splash-title{
       font-weight:900;
@@ -97,12 +108,12 @@
 
     .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:white;}
 
-    /* ✅ Header app-style iOS */
+    /* ✅ Header iOS-style: logo piccolo + titolo */
     .header-left{
       display:flex;
       align-items:center;
       gap:10px;
-      min-width:120px;
+      min-width:140px;
     }
     .header-logo{
       width:26px;
@@ -113,22 +124,25 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      padding: var(--logoPadHeader);
     }
     .header-logo img{
       width:100%;
       height:100%;
       object-fit:cover;
-      transform:scale(1.35); /* ✅ crop: non far vedere l’azzurro */
+      transform:scale(var(--logoZoomHeader)); /* ✅ nasconde cornice azzurra */
+      display:block;
     }
     .header-title{
       font-weight:900;
       font-size:14px;
       letter-spacing:.2px;
+      white-space:nowrap;
     }
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
-    /* ✅ Riquadro logo home: niente gradient dietro, solo crop immagine */
+    /* ✅ Riquadro logo home/info: più aria + crop leggero (no azzurro) */
     .logo-icon{
       width:92px;height:92px;margin:0 auto 12px;
       border-radius:24px;
@@ -136,13 +150,13 @@
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
+      padding: var(--logoPadHome); /* ✅ aria attorno per leggere "MoneyTrack" */
     }
-
     .logo-img{
       width:100%;
       height:100%;
       object-fit:cover;
-      transform:scale(1.35);     /* ✅ zoom/crop: via la cornice azzurra */
+      transform:scale(var(--logoZoomHome)); /* ✅ crop: via la parte azzurra */
       display:block;
     }
 
@@ -231,7 +245,7 @@
     /* Responsive automatico per altezza */
     @media (max-height: 720px){
       .logo-container{padding:18px 15px;}
-      .logo-icon{width:84px;height:84px;border-radius:20px;}
+      .logo-icon{width:84px;height:84px;border-radius:20px; padding: 9px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -240,7 +254,7 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      .logo-icon{width:78px;height:78px;border-radius:18px;}
+      .logo-icon{width:78px;height:78px;border-radius:18px; padding: 8px;}
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
@@ -249,11 +263,11 @@
 </head>
 
 <body>
-  <!-- ✅ Splash Screen -->
+  <!-- ✅ Splash Screen (2s) -->
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img id="splashImg" src="./assets/moneytrack-logo.png" alt="MoneyTrack" style="width:100%;height:100%;object-fit:cover;transform:scale(1.35)">
+        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -544,7 +558,7 @@
       render();
     }
 
-    function headerHTML(titleRightButtonsHTML, backHTML = ''){
+    function headerHTML(rightButtonsHTML, backHTML = ''){
       return `
         <div class="header">
           <div class="header-left">
@@ -552,7 +566,7 @@
             <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
             <div class="header-title">MoneyTrack Pro</div>
           </div>
-          <div style="display:flex; gap:10px">${titleRightButtonsHTML || ''}</div>
+          <div style="display:flex; gap:10px">${rightButtonsHTML || ''}</div>
         </div>
       `;
     }
@@ -595,7 +609,7 @@
           ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
-              <!-- ✅ stesso crop del logo anche qui -->
+              <!-- ✅ stesso “crop + aria” anche qui -->
               <div class="logo-icon" style="margin:0 auto 18px;">
                 <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
               </div>
@@ -605,7 +619,7 @@
               <p style="opacity:0.6; font-size:14px">Software Engineer & Design</p>
 
               <div style="margin-top:26px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.4">
-                MoneyTrack Pro v1.3.1<br>© 2024 Tutti i diritti riservati
+                MoneyTrack Pro v1.3.2<br>© 2024 Tutti i diritti riservati
               </div>
             </div>
           </div>
