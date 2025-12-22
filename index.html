@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/favicon-16x16.png">
 
-  <!-- ✅ Manifest -->
+  <!-- ✅ Manifest (consigliato: file vero, ma va anche inline) -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
 
   <style>
@@ -54,24 +54,31 @@
       transform:scale(1.02);
       pointer-events:none;
     }
-    .splash-card{display:flex;flex-direction:column;align-items:center;gap:14px;}
+    .splash-card{
+      display:flex; flex-direction:column; align-items:center; gap:14px;
+    }
     .splash-logo{
-      width:92px;height:92px;border-radius:24px;
+      width:92px; height:92px;
+      border-radius:24px;
       background:rgba(255,255,255,0.08);
-      display:flex;align-items:center;justify-content:center;
+      display:flex; align-items:center; justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
     }
     .splash-title{
-      font-weight:900;font-size:22px;
+      font-weight:900;
+      font-size:22px;
       background:linear-gradient(135deg,#06b6d4,#3b82f6);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
       letter-spacing:.2px;
     }
     .splash-sub{
       color:rgba(255,255,255,.55);
-      font-size:12px;font-weight:800;
-      letter-spacing:1px;text-transform:uppercase;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-transform:uppercase;
     }
 
     .header{
@@ -91,40 +98,50 @@
     .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:white;}
 
     /* ✅ Header app-style iOS */
-    .header-left{display:flex;align-items:center;gap:10px;min-width:120px;}
+    .header-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:120px;
+    }
     .header-logo{
-      width:26px;height:26px;border-radius:8px;
+      width:26px;
+      height:26px;
+      border-radius:8px;
       background:rgba(255,255,255,0.10);
       overflow:hidden;
-      display:flex;align-items:center;justify-content:center;
-      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
     .header-logo img{
-      width:100%;height:100%;
+      width:100%;
+      height:100%;
       object-fit:cover;
-      transform:scale(1.15); /* crop lieve */
-      display:block;
+      transform:scale(1.35); /* ✅ crop: non far vedere l’azzurro */
     }
-    .header-title{font-weight:900;font-size:14px;letter-spacing:.2px;}
+    .header-title{
+      font-weight:900;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
-    /* ✅ Riquadro logo home */
+    /* ✅ Riquadro logo home: crop immagine (via cornice azzurra) + aria per leggere MONEYTRACK */
     .logo-icon{
-      width:92px;height:92px;margin:0 auto 12px;
-      border-radius:24px;
+      width:116px;height:116px;margin:0 auto 12px;
+      border-radius:28px;
       background:rgba(255,255,255,0.07);
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
     }
-
-    /* ✅ più aria: si deve leggere “MoneyTrack” (NO crop aggressivo) */
     .logo-img{
       width:100%;
       height:100%;
-      object-fit:contain;
-      transform:scale(0.92);
+      object-fit:cover;
+      transform:scale(1.15); /* ✅ più aria intorno rispetto a 1.35 */
       display:block;
     }
 
@@ -210,10 +227,69 @@
       font-size:12px;font-weight:900;color:#06b6d4;margin-bottom:15px;
     }
 
+    /* ✅ Modal / Sheet */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.42);
+      display:flex; align-items:flex-end; justify-content:center;
+      z-index:9998;
+      padding:12px;
+    }
+    .sheet{
+      width:100%;
+      max-width:520px;
+      background:white;
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    .sheet-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      background:#111827;
+      color:white;
+    }
+    .sheet-title{font-weight:900;font-size:14px;}
+    .sheet-body{padding:14px 16px;}
+    .sheet-row{display:flex; gap:10px; align-items:center; justify-content:space-between; margin:10px 0;}
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; color:#111827;
+    }
+    .switch{
+      width:46px; height:28px; border-radius:999px;
+      background:#e5e7eb; position:relative;
+      cursor:pointer;
+      transition:background .2s;
+      flex:0 0 auto;
+    }
+    .switch.on{background:#22c55e;}
+    .knob{
+      width:22px;height:22px;border-radius:999px;
+      background:white;
+      position:absolute; top:3px; left:3px;
+      transition:left .2s;
+      box-shadow:0 2px 6px rgba(0,0,0,.2);
+    }
+    .switch.on .knob{left:21px;}
+
+    .value-box{
+      padding:12px 14px;
+      border-radius:14px;
+      background:#f3f4f6;
+      display:flex;
+      align-items:baseline;
+      justify-content:center;
+      gap:10px;
+      font-variant-numeric:tabular-nums;
+    }
+    .value-box .big{font-weight:1000; font-size:26px; color:#111827;}
+    .value-box .sub{font-weight:900; font-size:11px; color:#6b7280; letter-spacing:.9px; text-transform:uppercase;}
+
     /* Responsive automatico per altezza */
     @media (max-height: 720px){
       .logo-container{padding:18px 15px;}
-      .logo-icon{width:84px;height:84px;border-radius:20px;}
+      .logo-icon{width:104px;height:104px;border-radius:24px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -222,7 +298,7 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      .logo-icon{width:78px;height:78px;border-radius:18px;}
+      .logo-icon{width:96px;height:96px;border-radius:22px;}
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
@@ -235,8 +311,8 @@
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack"
-             style="width:100%;height:100%;object-fit:contain;transform:scale(.92);display:block;">
+        <img id="splashImg" src="./assets/moneytrack-logo.png" alt="MoneyTrack"
+             style="width:100%;height:100%;object-fit:cover;transform:scale(1.15)">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -252,7 +328,7 @@
     const banks = ['Euronet','Chianti Banca','CCB','CRV','Medio Banca','MPS','MPS PG','Intesa S.Paolo'];
     const employees = ['Francesco','Silvia','Dorota','William','Stefania','Filomena','Valeria','Flavio','Ciro','Alessandro','Ida'];
 
-    const STORAGE_KEY = "moneytrack_pro_v2";
+    const STORAGE_KEY = "moneytrack_pro_v3";
 
     let state = {
       screen: 'banks',
@@ -266,37 +342,32 @@
       lastMachineValue: {},
       machineConfirmed: {},
       lastOp: null,
-      logs: []
+      logs: [],
+      settings: {
+        haptics: true
+      },
+      // UI
+      sheet: null,              // 'settings' | 'initial' | null
+      initialDraft: '0'         // input per valore iniziale
     };
 
-    /* ==========================
-       ✅ HAPTIC / VIBRATION LAYER
-       ========================== */
-    const HAPTIC = {
-      enabled: true,
-      light(){ vib(10); },
-      tap(){ vib(12); },
-      success(){ vib([12, 25, 12]); },
-      warn(){ vib([20, 30, 20]); },
-      danger(){ vib([35, 25, 35]); }
-    };
-
-    function vib(pattern){
-      if(!HAPTIC.enabled) return;
-      if(!("vibrate" in navigator)) return;
-      try{ navigator.vibrate(pattern); } catch(e){}
-    }
-
-    // helper: wrapper per click con haptic (comodo per inline onclick)
-    function h(fnName, kind){
-      // kind: 'tap' | 'light' | 'success' | 'warn' | 'danger'
+    // ===== HAPTICS (micro feedback) =====
+    // iOS Safari spesso non supporta vibrate: qui non rompiamo nulla, al massimo "non vibra".
+    function haptic(pattern){
+      if(!state.settings?.haptics) return;
+      if(!('vibrate' in navigator)) return;
       try{
-        if(kind && HAPTIC[kind]) HAPTIC[kind]();
-        else HAPTIC.tap();
+        // pattern può essere numero (ms) o array
+        navigator.vibrate(pattern);
       }catch(e){}
-      // chiama la funzione globale
-      if(typeof window[fnName] === "function") window[fnName]();
     }
+    const H = {
+      tap:   () => haptic(8),
+      soft:  () => haptic(12),
+      ok:    () => haptic([12, 20, 12]),
+      warn:  () => haptic([30]),
+      error: () => haptic([60, 30, 60])
+    };
 
     function getKey(bank, emp){ return `${bank}|||${emp}`; }
 
@@ -318,7 +389,8 @@
         lastMachineValue: state.lastMachineValue,
         machineConfirmed: state.machineConfirmed,
         logs: state.logs,
-        lastOp: state.lastOp
+        lastOp: state.lastOp,
+        settings: state.settings
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -333,12 +405,14 @@
         state.machineConfirmed = parsed.machineConfirmed || {};
         state.logs = parsed.logs || [];
         state.lastOp = parsed.lastOp || null;
+        state.settings = parsed.settings || { haptics:true };
       }catch(e){
         state.totals = {};
         state.lastMachineValue = {};
         state.machineConfirmed = {};
         state.logs = [];
         state.lastOp = null;
+        state.settings = { haptics:true };
       }
     }
 
@@ -382,53 +456,79 @@
       return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
-    // keypad
-    function addDigit(d){ HAPTIC.light();
-      const f = state.inputField;
+    // ===== keypad (con haptics) =====
+    function addDigit(d){
+      H.tap();
+      const f = state.sheet === 'initial' ? 'initialDraft' : state.inputField;
       let cur = state[f];
+
       if(cur === '0') state[f] = d;
       else if(cur.length < 10) state[f] = cur + d;
+
       render();
     }
-    function addDecimal(){ HAPTIC.light();
-      const f = state.inputField;
+    function addDecimal(){
+      H.tap();
+      const f = state.sheet === 'initial' ? 'initialDraft' : state.inputField;
       if(!state[f].includes('.')) state[f] += '.';
       render();
     }
-    function deleteDigit(){ HAPTIC.tap();
-      const f = state.inputField;
+    function deleteDigit(){
+      H.soft();
+      const f = state.sheet === 'initial' ? 'initialDraft' : state.inputField;
       let cur = state[f];
       state[f] = (cur.length > 1) ? cur.slice(0,-1) : '0';
       if(state[f] === '-') state[f] = '0';
       render();
     }
-    function clearInput(){ HAPTIC.light();
-      state[state.inputField] = '0';
+    function clearInput(){
+      H.soft();
+      if(state.sheet === 'initial') state.initialDraft = '0';
+      else state[state.inputField] = '0';
       render();
     }
 
-    function setMode(mode){ HAPTIC.tap();
+    // ===== UI: sheet =====
+    function openSheet(which){
+      H.tap();
+      state.sheet = which; // 'settings' | 'initial'
+      if(which === 'initial'){
+        const key = getKey(state.selectedBank, state.selectedEmployee);
+        const cur = Number(state.totals[key] || 0);
+        state.initialDraft = (cur ? cur.toFixed(2) : '0');
+      }
+      render();
+    }
+    function closeSheet(){
+      H.soft();
+      state.sheet = null;
+      render();
+    }
+
+    // ===== Core actions =====
+    function setMode(mode){
+      H.tap();
       state.mode = mode;
       state.amount = '0';
       state.rejected = '0';
       state.inputField = 'amount';
       render();
     }
-    function setInputField(field){ HAPTIC.light();
+
+    function setInputField(field){
+      H.tap();
       state.inputField = field;
       render();
     }
 
     function confirmMachineValue(){
-      HAPTIC.success();
-
       if(state.mode !== 'auto') return;
 
       const key = getKey(state.selectedBank, state.selectedEmployee);
       const currentTotal = state.totals[key] || 0;
 
       const currentMachineValue = safeParse(state.amount);
-      if(currentMachineValue <= 0) return;
+      if(currentMachineValue <= 0){ H.warn(); return; }
 
       const lastValue = state.lastMachineValue[state.selectedBank] || 0;
       const delta = currentMachineValue - lastValue;
@@ -448,6 +548,7 @@
       state.machineConfirmed[state.selectedBank] = true;
 
       pushLog(delta, "machine");
+      H.ok();
 
       state.amount = '0';
       state.rejected = '0';
@@ -458,14 +559,14 @@
     }
 
     function addToTotal(){
-      HAPTIC.success();
-
       const key = getKey(state.selectedBank, state.selectedEmployee);
       const currentTotal = state.totals[key] || 0;
       let add = 0;
 
       if(state.mode === 'manual'){
         add = safeParse(state.amount);
+        if(add === 0){ H.warn(); return; }
+
         state.lastOp = {
           key,
           delta: add,
@@ -474,16 +575,15 @@
           type: 'manual'
         };
       } else {
-        if(state.machineConfirmed[state.selectedBank] !== true){
-          HAPTIC.warn();
-          return;
-        }
+        if(state.machineConfirmed[state.selectedBank] !== true){ H.warn(); return; }
 
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
         const rejectedAmount = safeParse(state.rejected);
 
         if(state.inputField === 'rejected'){
           add = rejectedAmount;
+          if(add === 0){ H.warn(); return; }
+
           state.lastOp = {
             key,
             delta: add,
@@ -494,6 +594,7 @@
         } else {
           const currentMachineValue = safeParse(state.amount);
           add = (currentMachineValue - lastValue) + rejectedAmount;
+          if(add === 0){ H.warn(); return; }
 
           state.lastOp = {
             key,
@@ -516,15 +617,14 @@
       state.rejected = '0';
       state.inputField = 'amount';
 
+      H.ok();
       save();
       render();
     }
 
     function undoLast(){
-      HAPTIC.tap();
-
       const op = state.lastOp;
-      if(!op || !op.key) return;
+      if(!op || !op.key){ H.warn(); return; }
 
       const cur = state.totals[op.key] || 0;
       state.totals[op.key] = cur - (op.delta || 0);
@@ -540,31 +640,64 @@
       }
 
       state.lastOp = null;
+      H.soft();
       save();
       render();
     }
 
-    function resetTotal(){ HAPTIC.danger();
+    function resetTotal(){
       const key = getKey(state.selectedBank, state.selectedEmployee);
       state.totals[key] = 0;
       state.amount = '0';
       state.rejected = '0';
       state.lastOp = null;
+      H.error();
       save();
       render();
     }
 
-    function resetMachine(){ HAPTIC.danger();
+    function resetMachine(){
       state.lastMachineValue[state.selectedBank] = 0;
       state.machineConfirmed[state.selectedBank] = false;
       state.amount = '0';
       state.rejected = '0';
       state.inputField = 'amount';
       state.lastOp = null;
+      H.error();
       save();
       render();
     }
 
+    // ✅ VALORE INIZIALE DIPENDENTE (set assoluto)
+    function applyInitialValue(){
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const newVal = safeParse(state.initialDraft);
+      const oldVal = Number(state.totals[key] || 0);
+      const delta = newVal - oldVal;
+
+      state.totals[key] = newVal;
+
+      // per UNDO (ripristina vecchio totale)
+      state.lastOp = {
+        key,
+        delta: delta,
+        bank: state.selectedBank,
+        prevMachine: state.lastMachineValue[state.selectedBank] || 0,
+        type: 'initial-set',
+        prevTotal: oldVal,
+        newTotal: newVal
+      };
+
+      // log (così entra nelle statistiche del giorno)
+      if(delta !== 0) pushLog(delta, "initial");
+
+      H.ok();
+      save();
+      state.sheet = null;
+      render();
+    }
+
+    // ===== Header helper =====
     function headerHTML(titleRightButtonsHTML, backHTML = ''){
       return `
         <div class="header">
@@ -578,14 +711,106 @@
       `;
     }
 
+    function sheetHTML(){
+      if(!state.sheet) return '';
+
+      if(state.sheet === 'settings'){
+        const on = !!state.settings.haptics;
+        return `
+          <div class="overlay" onclick="closeSheet()">
+            <div class="sheet" onclick="event.stopPropagation()">
+              <div class="sheet-head">
+                <div class="sheet-title">Impostazioni</div>
+                <button class="btn" style="background:rgba(255,255,255,.14); color:white; padding:8px 12px" onclick="closeSheet()">Chiudi</button>
+              </div>
+              <div class="sheet-body">
+                <div class="sheet-row">
+                  <div class="toggle">
+                    <div>Haptic feedback</div>
+                    <div style="font-size:11px; font-weight:800; color:#6b7280">micro-vibrazione sui tap</div>
+                  </div>
+                  <div class="switch ${on ? 'on' : ''}" onclick="toggleHaptics()">
+                    <div class="knob"></div>
+                  </div>
+                </div>
+
+                <div style="margin-top:10px; font-size:12px; color:#6b7280; font-weight:800;">
+                  Nota: su iOS Safari la vibrazione web può essere limitata.
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if(state.sheet === 'initial'){
+        const key = getKey(state.selectedBank, state.selectedEmployee);
+        const cur = Number(state.totals[key] || 0);
+
+        return `
+          <div class="overlay" onclick="closeSheet()">
+            <div class="sheet" onclick="event.stopPropagation()">
+              <div class="sheet-head">
+                <div class="sheet-title">Valore iniziale — ${state.selectedEmployee}</div>
+                <button class="btn" style="background:rgba(255,255,255,.14); color:white; padding:8px 12px" onclick="closeSheet()">Annulla</button>
+              </div>
+
+              <div class="sheet-body">
+                <div class="value-box">
+                  <div>
+                    <div class="sub">Attuale</div>
+                    <div class="big">${formatEUR(cur)}</div>
+                  </div>
+                  <div style="width:1px;height:36px;background:#e5e7eb;"></div>
+                  <div>
+                    <div class="sub">Nuovo</div>
+                    <div class="big">€ ${state.initialDraft}</div>
+                  </div>
+                </div>
+
+                <div class="keypad" style="border-radius:16px; margin-top:12px;">
+                  ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="addDigit('${n}')">${n}</button>`).join('')}
+                  <button class="key" onclick="addDecimal()">.</button>
+                  <button class="key" onclick="addDigit('0')">0</button>
+                  <button class="key action" onclick="deleteDigit()">⌫</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px;">
+                  <button class="btn btn-outline" onclick="clearInput()">CLEAR</button>
+                  <button class="btn btn-outline" onclick="closeSheet()">ANNULLA</button>
+                  <button class="btn btn-primary" onclick="applyInitialValue()">IMPOSTA</button>
+                </div>
+
+                <div style="margin-top:10px; font-size:12px; color:#6b7280; font-weight:800;">
+                  Usa questo se il dipendente aveva già contato banconote prima di aprire l’app: imposti il totale e poi continui normalmente.
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return '';
+    }
+
+    function toggleHaptics(){
+      state.settings.haptics = !state.settings.haptics;
+      save();
+      // vibra solo quando attivi (così senti che è ON)
+      if(state.settings.haptics) H.ok();
+      render();
+    }
+
+    // ===== Render =====
     function render(){
       const app = document.getElementById('app');
 
       if(state.screen === 'banks'){
         app.innerHTML = `
           ${headerHTML(`
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="HAPTIC.tap(); state.screen='stats'; render()">📊</button>
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="HAPTIC.tap(); state.screen='info'; render()">ℹ️</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="H.tap(); state.screen='stats'; render()">📊</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="H.tap(); state.screen='info'; render()">ℹ️</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="openSheet('settings')">⚙️</button>
           `)}
 
           <div class="logo-container">
@@ -601,21 +826,27 @@
 
           <div class="content">
             ${banks.map(b => `
-              <div class="list-item" onclick="HAPTIC.tap(); state.selectedBank='${b}'; state.screen='employees'; render()">
+              <div class="list-item" onclick="H.tap(); state.selectedBank='${b}'; state.screen='employees'; render()">
                 <span style="font-weight:900">${b}</span>
                 <span style="color:#9ca3af">›</span>
               </div>
             `).join('')}
           </div>
+
+          ${sheetHTML()}
         `;
         return;
       }
 
       if(state.screen === 'info'){
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>`)}
+          ${headerHTML(`
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="openSheet('settings')">⚙️</button>
+          `, `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="H.tap(); state.screen='banks'; render()">‹</button>`)}
+
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
+              <!-- ✅ stesso crop del logo anche qui -->
               <div class="logo-icon" style="margin:0 auto 18px;">
                 <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
               </div>
@@ -625,10 +856,12 @@
               <p style="opacity:0.6; font-size:14px">Software Engineer & Design</p>
 
               <div style="margin-top:26px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.4">
-                MoneyTrack Pro v1.3.2<br>© 2024 Tutti i diritti riservati
+                MoneyTrack Pro v1.4.0<br>© 2024 Tutti i diritti riservati
               </div>
             </div>
           </div>
+
+          ${sheetHTML()}
         `;
         return;
       }
@@ -647,7 +880,10 @@
           `).join('');
 
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>`)}
+          ${headerHTML(`
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="openSheet('settings')">⚙️</button>
+          `, `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="H.tap(); state.screen='banks'; render()">‹</button>`)}
+
           <div class="content" style="background:#fff">
             <div class="display-box" style="background:var(--dark); color:white">
               <div class="display-label">Totale giornaliero</div>
@@ -665,6 +901,8 @@
 
             ${rows || `<div style="padding:16px; color:#6b7280">Nessun dato per oggi.</div>`}
           </div>
+
+          ${sheetHTML()}
         `;
         return;
       }
@@ -673,24 +911,28 @@
         app.innerHTML = `
           <div class="header header-blue">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="H.tap(); state.screen='banks'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedBank}</div>
             </div>
-            <div style="width:40px"></div>
+            <div style="display:flex; gap:10px">
+              <button class="btn" style="background:rgba(255,255,255,.16); color:white; padding:8px 12px" onclick="openSheet('settings')">⚙️</button>
+            </div>
           </div>
 
           <div class="content">
             ${employees.map(e => {
               const total = state.totals[getKey(state.selectedBank, e)] || 0;
               return `
-                <div class="list-item" onclick="HAPTIC.tap(); state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
+                <div class="list-item" onclick="H.tap(); state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
                   <span style="font-weight:800">${e}</span>
                   <span style="font-weight:900; color:var(--success)">${formatEUR(total)}</span>
                 </div>
               `;
             }).join('')}
           </div>
+
+          ${sheetHTML()}
         `;
         return;
       }
@@ -717,11 +959,14 @@
         app.innerHTML = `
           <div class="header header-gray">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='employees'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="H.tap(); state.screen='employees'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedEmployee}</div>
             </div>
-            <div style="width:40px"></div>
+            <div style="display:flex; gap:10px">
+              <button class="btn" style="background:rgba(255,255,255,.16); color:white; padding:8px 12px" onclick="openSheet('initial')">€+</button>
+              <button class="btn" style="background:rgba(255,255,255,.16); color:white; padding:8px 12px" onclick="openSheet('settings')">⚙️</button>
+            </div>
           </div>
 
           <div class="mode-selector">
@@ -789,7 +1034,7 @@
             <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:15px; background:#fff;">
               <button class="btn btn-outline" onclick="undoLast()">UNDO</button>
               <button class="btn btn-outline" onclick="clearInput()">CLEAR</button>
-              <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : ''}">OK</button>
+              <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : 'H.warn()'}">OK</button>
               <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
             </div>
 
@@ -801,6 +1046,8 @@
               </div>
             ` : ''}
           </div>
+
+          ${sheetHTML()}
         `;
         return;
       }
@@ -810,11 +1057,10 @@
     load();
     render();
 
-    // ✅ Splash: 2 secondi poi fade out (con micro haptic)
+    // ✅ Splash: 2 secondi poi fade out
     window.addEventListener('load', () => {
       const splash = document.getElementById('splash');
       setTimeout(() => {
-        try{ HAPTIC.light(); }catch(e){}
         splash.classList.add('hidden');
         setTimeout(() => splash.remove(), 450);
       }, 2000);
