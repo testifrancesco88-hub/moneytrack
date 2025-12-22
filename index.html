@@ -9,12 +9,12 @@
   <meta name="theme-color" content="#111827">
   <title>MoneyTrack - Pro</title>
 
-  <!-- ✅ PWA Icons (metti i file in: /assets/icons/ ) -->
+  <!-- ✅ PWA Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/favicon-16x16.png">
 
-  <!-- ✅ Manifest (meglio un file manifest.webmanifest, ma anche inline va) -->
+  <!-- ✅ Manifest -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
 
   <style>
@@ -27,12 +27,6 @@
       --slate:#374151;
       --purple:#7c3aed;
       --cyan:#0ea5e9;
-
-      /* ✅ controlli “una volta sola” quanto croppare e quanta aria dare */
-      --logoZoomHome: 1.18;    /* meno zoom = più aria; più zoom = meno cornice azzurra */
-      --logoZoomHeader: 1.26;  /* header più stretto: un filo più zoom */
-      --logoPadHome: 10px;     /* aria interna (home + info) */
-      --logoPadHeader: 2px;    /* aria interna header */
     }
 
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -60,36 +54,24 @@
       transform:scale(1.02);
       pointer-events:none;
     }
-    .splash-card{display:flex; flex-direction:column; align-items:center; gap:14px;}
+    .splash-card{display:flex;flex-direction:column;align-items:center;gap:14px;}
     .splash-logo{
-      width:92px; height:92px;
-      border-radius:24px;
+      width:92px;height:92px;border-radius:24px;
       background:rgba(255,255,255,0.08);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
-      padding: var(--logoPadHome);
-    }
-    .splash-logo img{
-      width:100%;height:100%;
-      object-fit:cover;
-      transform:scale(var(--logoZoomHome));
-      display:block;
     }
     .splash-title{
-      font-weight:900;
-      font-size:22px;
+      font-weight:900;font-size:22px;
       background:linear-gradient(135deg,#06b6d4,#3b82f6);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
       letter-spacing:.2px;
     }
     .splash-sub{
       color:rgba(255,255,255,.55);
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:1px;
-      text-transform:uppercase;
+      font-size:12px;font-weight:800;
+      letter-spacing:1px;text-transform:uppercase;
     }
 
     .header{
@@ -108,41 +90,26 @@
 
     .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:white;}
 
-    /* ✅ Header iOS-style: logo piccolo + titolo */
-    .header-left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:140px;
-    }
+    /* ✅ Header app-style iOS */
+    .header-left{display:flex;align-items:center;gap:10px;min-width:120px;}
     .header-logo{
-      width:26px;
-      height:26px;
-      border-radius:8px;
+      width:26px;height:26px;border-radius:8px;
       background:rgba(255,255,255,0.10);
       overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: var(--logoPadHeader);
+      display:flex;align-items:center;justify-content:center;
+      flex:0 0 auto;
     }
     .header-logo img{
-      width:100%;
-      height:100%;
+      width:100%;height:100%;
       object-fit:cover;
-      transform:scale(var(--logoZoomHeader)); /* ✅ nasconde cornice azzurra */
+      transform:scale(1.15); /* crop lieve */
       display:block;
     }
-    .header-title{
-      font-weight:900;
-      font-size:14px;
-      letter-spacing:.2px;
-      white-space:nowrap;
-    }
+    .header-title{font-weight:900;font-size:14px;letter-spacing:.2px;}
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
-    /* ✅ Riquadro logo home/info: più aria + crop leggero (no azzurro) */
+    /* ✅ Riquadro logo home */
     .logo-icon{
       width:92px;height:92px;margin:0 auto 12px;
       border-radius:24px;
@@ -150,13 +117,14 @@
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
-      padding: var(--logoPadHome); /* ✅ aria attorno per leggere "MoneyTrack" */
     }
+
+    /* ✅ più aria: si deve leggere “MoneyTrack” (NO crop aggressivo) */
     .logo-img{
       width:100%;
       height:100%;
-      object-fit:cover;
-      transform:scale(var(--logoZoomHome)); /* ✅ crop: via la parte azzurra */
+      object-fit:contain;
+      transform:scale(0.92);
       display:block;
     }
 
@@ -245,7 +213,7 @@
     /* Responsive automatico per altezza */
     @media (max-height: 720px){
       .logo-container{padding:18px 15px;}
-      .logo-icon{width:84px;height:84px;border-radius:20px; padding: 9px;}
+      .logo-icon{width:84px;height:84px;border-radius:20px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -254,7 +222,7 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      .logo-icon{width:78px;height:78px;border-radius:18px; padding: 8px;}
+      .logo-icon{width:78px;height:78px;border-radius:18px;}
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
@@ -263,11 +231,12 @@
 </head>
 
 <body>
-  <!-- ✅ Splash Screen (2s) -->
+  <!-- ✅ Splash Screen -->
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack">
+        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack"
+             style="width:100%;height:100%;object-fit:contain;transform:scale(.92);display:block;">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -299,6 +268,35 @@
       lastOp: null,
       logs: []
     };
+
+    /* ==========================
+       ✅ HAPTIC / VIBRATION LAYER
+       ========================== */
+    const HAPTIC = {
+      enabled: true,
+      light(){ vib(10); },
+      tap(){ vib(12); },
+      success(){ vib([12, 25, 12]); },
+      warn(){ vib([20, 30, 20]); },
+      danger(){ vib([35, 25, 35]); }
+    };
+
+    function vib(pattern){
+      if(!HAPTIC.enabled) return;
+      if(!("vibrate" in navigator)) return;
+      try{ navigator.vibrate(pattern); } catch(e){}
+    }
+
+    // helper: wrapper per click con haptic (comodo per inline onclick)
+    function h(fnName, kind){
+      // kind: 'tap' | 'light' | 'success' | 'warn' | 'danger'
+      try{
+        if(kind && HAPTIC[kind]) HAPTIC[kind]();
+        else HAPTIC.tap();
+      }catch(e){}
+      // chiama la funzione globale
+      if(typeof window[fnName] === "function") window[fnName]();
+    }
 
     function getKey(bank, emp){ return `${bank}|||${emp}`; }
 
@@ -385,43 +383,45 @@
     }
 
     // keypad
-    function addDigit(d){
+    function addDigit(d){ HAPTIC.light();
       const f = state.inputField;
       let cur = state[f];
       if(cur === '0') state[f] = d;
       else if(cur.length < 10) state[f] = cur + d;
       render();
     }
-    function addDecimal(){
+    function addDecimal(){ HAPTIC.light();
       const f = state.inputField;
       if(!state[f].includes('.')) state[f] += '.';
       render();
     }
-    function deleteDigit(){
+    function deleteDigit(){ HAPTIC.tap();
       const f = state.inputField;
       let cur = state[f];
       state[f] = (cur.length > 1) ? cur.slice(0,-1) : '0';
       if(state[f] === '-') state[f] = '0';
       render();
     }
-    function clearInput(){
+    function clearInput(){ HAPTIC.light();
       state[state.inputField] = '0';
       render();
     }
 
-    function setMode(mode){
+    function setMode(mode){ HAPTIC.tap();
       state.mode = mode;
       state.amount = '0';
       state.rejected = '0';
       state.inputField = 'amount';
       render();
     }
-    function setInputField(field){
+    function setInputField(field){ HAPTIC.light();
       state.inputField = field;
       render();
     }
 
     function confirmMachineValue(){
+      HAPTIC.success();
+
       if(state.mode !== 'auto') return;
 
       const key = getKey(state.selectedBank, state.selectedEmployee);
@@ -458,6 +458,8 @@
     }
 
     function addToTotal(){
+      HAPTIC.success();
+
       const key = getKey(state.selectedBank, state.selectedEmployee);
       const currentTotal = state.totals[key] || 0;
       let add = 0;
@@ -472,7 +474,10 @@
           type: 'manual'
         };
       } else {
-        if(state.machineConfirmed[state.selectedBank] !== true) return;
+        if(state.machineConfirmed[state.selectedBank] !== true){
+          HAPTIC.warn();
+          return;
+        }
 
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
         const rejectedAmount = safeParse(state.rejected);
@@ -516,6 +521,8 @@
     }
 
     function undoLast(){
+      HAPTIC.tap();
+
       const op = state.lastOp;
       if(!op || !op.key) return;
 
@@ -537,7 +544,7 @@
       render();
     }
 
-    function resetTotal(){
+    function resetTotal(){ HAPTIC.danger();
       const key = getKey(state.selectedBank, state.selectedEmployee);
       state.totals[key] = 0;
       state.amount = '0';
@@ -547,7 +554,7 @@
       render();
     }
 
-    function resetMachine(){
+    function resetMachine(){ HAPTIC.danger();
       state.lastMachineValue[state.selectedBank] = 0;
       state.machineConfirmed[state.selectedBank] = false;
       state.amount = '0';
@@ -558,7 +565,7 @@
       render();
     }
 
-    function headerHTML(rightButtonsHTML, backHTML = ''){
+    function headerHTML(titleRightButtonsHTML, backHTML = ''){
       return `
         <div class="header">
           <div class="header-left">
@@ -566,7 +573,7 @@
             <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
             <div class="header-title">MoneyTrack Pro</div>
           </div>
-          <div style="display:flex; gap:10px">${rightButtonsHTML || ''}</div>
+          <div style="display:flex; gap:10px">${titleRightButtonsHTML || ''}</div>
         </div>
       `;
     }
@@ -577,8 +584,8 @@
       if(state.screen === 'banks'){
         app.innerHTML = `
           ${headerHTML(`
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='stats'; render()">📊</button>
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='info'; render()">ℹ️</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="HAPTIC.tap(); state.screen='stats'; render()">📊</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="HAPTIC.tap(); state.screen='info'; render()">ℹ️</button>
           `)}
 
           <div class="logo-container">
@@ -594,7 +601,7 @@
 
           <div class="content">
             ${banks.map(b => `
-              <div class="list-item" onclick="state.selectedBank='${b}'; state.screen='employees'; render()">
+              <div class="list-item" onclick="HAPTIC.tap(); state.selectedBank='${b}'; state.screen='employees'; render()">
                 <span style="font-weight:900">${b}</span>
                 <span style="color:#9ca3af">›</span>
               </div>
@@ -606,10 +613,9 @@
 
       if(state.screen === 'info'){
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>`)}
+          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
-              <!-- ✅ stesso “crop + aria” anche qui -->
               <div class="logo-icon" style="margin:0 auto 18px;">
                 <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
               </div>
@@ -641,7 +647,7 @@
           `).join('');
 
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>`)}
+          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:#fff">
             <div class="display-box" style="background:var(--dark); color:white">
               <div class="display-label">Totale giornaliero</div>
@@ -667,7 +673,7 @@
         app.innerHTML = `
           <div class="header header-blue">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='banks'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedBank}</div>
             </div>
@@ -678,7 +684,7 @@
             ${employees.map(e => {
               const total = state.totals[getKey(state.selectedBank, e)] || 0;
               return `
-                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
+                <div class="list-item" onclick="HAPTIC.tap(); state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
                   <span style="font-weight:800">${e}</span>
                   <span style="font-weight:900; color:var(--success)">${formatEUR(total)}</span>
                 </div>
@@ -711,7 +717,7 @@
         app.innerHTML = `
           <div class="header header-gray">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='employees'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="HAPTIC.tap(); state.screen='employees'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedEmployee}</div>
             </div>
@@ -804,10 +810,11 @@
     load();
     render();
 
-    // ✅ Splash: 2 secondi poi fade out
+    // ✅ Splash: 2 secondi poi fade out (con micro haptic)
     window.addEventListener('load', () => {
       const splash = document.getElementById('splash');
       setTimeout(() => {
+        try{ HAPTIC.light(); }catch(e){}
         splash.classList.add('hidden');
         setTimeout(() => splash.remove(), 450);
       }, 2000);
