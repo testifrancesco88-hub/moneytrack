@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MoneyTrack" />
-  <meta name="theme-color" content="#111827" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MoneyTrack">
+  <meta name="theme-color" content="#111827">
   <title>MoneyTrack - Pro</title>
 
   <!-- ✅ PWA Icons -->
@@ -14,11 +14,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/favicon-16x16.png">
 
-  <!-- ✅ Manifest (inline ok, ma meglio un file vero quando vuoi) -->
+  <!-- ✅ Manifest inline (ok anche così) -->
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
-
-  <!-- ✅ jsPDF per export PDF -->
-  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
     :root{
@@ -30,6 +27,12 @@
       --slate:#374151;
       --purple:#7c3aed;
       --cyan:#0ea5e9;
+
+      /* ✅ Logo tuning */
+      --logoBox: 112px;    /* più grande = più leggibile */
+      --logoRadius: 26px;
+      --logoZoom: 1.12;    /* meno zoom = si legge “MoneyTrack” */
+      --logoPad: 10px;     /* aria attorno */
     }
 
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -59,19 +62,13 @@
     }
     .splash-card{display:flex; flex-direction:column; align-items:center; gap:14px;}
     .splash-logo{
-      width:112px; height:112px;
-      border-radius:26px;
+      width:108px; height:108px;
+      border-radius:28px;
       background:rgba(255,255,255,0.08);
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
-      padding:10px;
-    }
-    .splash-logo img{
-      width:100%; height:100%;
-      object-fit:cover;
-      transform:scale(1.16); /* ✅ più aria, testo più leggibile */
-      display:block;
+      padding:12px;
     }
     .splash-title{
       font-weight:900;
@@ -113,21 +110,21 @@
       min-width:120px;
     }
     .header-logo{
-      width:26px;
-      height:26px;
-      border-radius:8px;
+      width:28px;
+      height:28px;
+      border-radius:9px;
       background:rgba(255,255,255,0.10);
       overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:2px;
+      padding:3px;
     }
     .header-logo img{
       width:100%;
       height:100%;
-      object-fit:cover;
-      transform:scale(1.16); /* ✅ più aria ma senza cornice */
+      object-fit:contain;
+      transform:scale(1.05);
       display:block;
     }
     .header-title{
@@ -142,27 +139,35 @@
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
-    /* ✅ Riquadro logo home: più grande + più aria */
+    /* ✅ Riquadro logo home: più grande + aria + leggibile */
     .logo-icon{
-      width:124px;height:124px;margin:0 auto 12px;
-      border-radius:28px;
-      background:rgba(255,255,255,0.07);
-      display:flex;align-items:center;justify-content:center;
+      width:var(--logoBox);
+      height:var(--logoBox);
+      margin:0 auto 12px;
+      border-radius:var(--logoRadius);
+      background:rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
-      padding:12px;
+      padding:var(--logoPad);
     }
+
     .logo-img{
       width:100%;
       height:100%;
-      object-fit:cover;
-      transform:scale(1.16); /* ✅ più aria, testo “MoneyTrack” più leggibile */
+      object-fit:contain;        /* ✅ mostra la scritta */
+      transform:scale(var(--logoZoom)); /* ✅ micro-crop per togliere bordi */
       display:block;
     }
+
     .logo-text{
-      font-size:24px;font-weight:900;
+      font-size:24px;
+      font-weight:900;
       background:linear-gradient(135deg,#06b6d4,#3b82f6);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
 
     .list-item{
@@ -171,26 +176,8 @@
       display:flex;align-items:center;justify-content:space-between;
       transition:background 0.1s;
       cursor:pointer;
-      gap:12px;
     }
     .list-item:active{background:#f9fafb;}
-
-    .list-left{display:flex; align-items:center; gap:10px; min-width:0;}
-    .list-name{font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-
-    .list-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
-    .mini-btn{
-      border:none;
-      background:#e5e7eb;
-      color:#374151;
-      font-weight:900;
-      border-radius:10px;
-      padding:10px 12px;
-      cursor:pointer;
-    }
-    .mini-btn:active{transform:scale(.96);}
-    .mini-btn.blue{background:#dbeafe;color:#1d4ed8;}
-    .mini-btn.gray{background:#e5e7eb;color:#374151;}
 
     .btn{
       padding:14px;border:none;border-radius:12px;
@@ -205,6 +192,13 @@
     .btn-outline{background:#e5e7eb;color:#374151;}
     .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
 
+    .btn-mini{
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:900;
+    }
+
     .display-box{padding:15px;text-align:center;position:relative;}
     .display-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px;}
     .display-value{font-size:32px;font-weight:900;font-variant-numeric:tabular-nums;}
@@ -217,13 +211,21 @@
     }
     .mode-btn.active{background:white;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,0.1);}
 
-    .field-selector{display:flex;gap:8px;padding:10px;justify-content:center;background:#4b5563;}
+    .field-selector{display:flex;gap:8px;padding:10px;justify-content:center;background:#4b5563; align-items:center;}
     .field-btn{
       padding:8px 16px;border:none;border-radius:20px;
       background:rgba(255,255,255,0.2);color:white;font-size:11px;font-weight:900;
       cursor:pointer;
     }
     .field-btn.active{background:white;color:#374151;}
+
+    .machine-row{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      padding-top:8px;
+    }
 
     .keypad{
       display:grid;grid-template-columns:repeat(3,1fr);
@@ -261,8 +263,8 @@
 
     /* Responsive automatico per altezza */
     @media (max-height: 720px){
+      :root{ --logoBox: 100px; --logoRadius: 24px; --logoPad: 9px; --logoZoom: 1.10; }
       .logo-container{padding:18px 15px;}
-      .logo-icon{width:112px;height:112px;border-radius:26px;padding:10px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -271,10 +273,11 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      .logo-icon{width:104px;height:104px;border-radius:24px;padding:10px;}
+      :root{ --logoBox: 94px; --logoRadius: 22px; --logoPad: 8px; --logoZoom: 1.08; }
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
+      .btn-mini{padding:7px 9px;font-size:11px;}
     }
   </style>
 </head>
@@ -284,7 +287,7 @@
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack">
+        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack" style="width:100%;height:100%;object-fit:contain;transform:scale(1.08);display:block;">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -317,20 +320,22 @@
       logs: []
     };
 
-    // ===== HAPTIC (micro feedback) =====
-    function haptic(type = "light"){
-      // iOS Safari spesso non vibra; Android/PWA sì.
-      if(!("vibrate" in navigator)) return;
+    // ========= HAPTIC / VIBRATION =========
+    function haptic(type = "tap"){
+      // iOS Safari spesso non supporta vibrate: qui non succede nulla, ma non rompe.
+      if (!("vibrate" in navigator)) return;
+
+      // pattern leggeri
+      const patterns = {
+        tap: 8,
+        key: 6,
+        nav: 10,
+        success: [14, 20, 10],
+        warn: [20, 30, 20],
+        error: [30, 40, 30]
+      };
       try{
-        const map = {
-          light: 10,
-          medium: 18,
-          heavy: 28,
-          success: [10, 20, 10],
-          error: [30, 30, 30],
-          tick: 6
-        };
-        navigator.vibrate(map[type] ?? 10);
+        navigator.vibrate(patterns[type] ?? patterns.tap);
       }catch(e){}
     }
 
@@ -378,14 +383,15 @@
       }
     }
 
-    function pushLog(delta, kind){
+    function pushLog(delta, kind, meta = {}){
       state.logs = state.logs || [];
       state.logs.push({
         ts: new Date().toISOString(),
         bank: state.selectedBank,
         emp: state.selectedEmployee,
         delta: Number(delta) || 0,
-        kind
+        kind,
+        ...meta
       });
     }
 
@@ -418,203 +424,134 @@
       return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
-    // ===== VALORE INIZIALE (manuale) =====
-    function setInitialForEmployee(emp){
-      const key = getKey(state.selectedBank, emp);
-      const current = Number(state.totals[key] || 0);
-
-      const raw = prompt(
-        `Valore iniziale per ${emp} (Banca: ${state.selectedBank})\n` +
-        `Attuale: ${formatEUR(current)}\n\n` +
-        `Inserisci nuovo totale (es. 123.45):`,
-        (current || 0).toFixed(2)
-      );
-      if(raw === null) return;
-
-      const next = safeParse(raw);
-      const delta = next - current;
-
-      state.totals[key] = next;
-
-      // Logga la differenza oggi (così stats/export tornano)
-      state.selectedEmployee = emp;
-      pushLog(delta, "initial");
-
-      state.lastOp = {
-        key,
-        delta,
-        bank: state.selectedBank,
-        prevMachine: state.lastMachineValue[state.selectedBank] || 0,
-        type: 'initial'
-      };
-
-      save();
-      haptic("success");
-      render();
-    }
-
-    // ===== Export CSV/PDF =====
-    function getTodayDateStr(){
+    // ========= EXPORT =========
+    function todayLabel(){
       const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    function buildTodayReport(){
-      const s = computeTodayStats();
-      const start = startOfTodayLocal();
-      const rowsLogs = (state.logs || []).filter(e => {
-        const t = new Date(e.ts).getTime();
-        return !isNaN(t) && t >= start;
-      });
-
-      // per dipendente: somma oggi
-      const byEmp = {};
-      for(const e of rowsLogs){
-        byEmp[e.emp] = (byEmp[e.emp] || 0) + (Number(e.delta) || 0);
-      }
-
-      return { stats: s, rowsLogs, byEmp };
-    }
-
-    function downloadBlob(filename, mime, content){
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
     }
 
     function exportTodayCSV(){
-      const dateStr = getTodayDateStr();
-      const rep = buildTodayReport();
+      const s = computeTodayStats();
+      const date = todayLabel();
 
-      // CSV semplice (IT), separatore ;
-      let csv = "";
-      csv += `MoneyTrack Pro;Report Giornaliero;${dateStr}\n`;
-      csv += `Totale Giornaliero;${rep.stats.totalToday.toFixed(2)}\n\n`;
+      const lines = [];
+      lines.push(["Data","Sezione","Nome","Valore"].join(","));
 
-      csv += `Totale per banca (oggi)\n`;
-      csv += `Banca;Totale\n`;
-      Object.entries(rep.stats.byBank)
-        .sort((a,b)=>b[1]-a[1])
-        .forEach(([bank,val])=>{
-          csv += `${bank};${(Number(val)||0).toFixed(2)}\n`;
-        });
+      lines.push([date,"TOTALE_GIORNALIERO","", (s.totalToday||0).toFixed(2)].join(","));
 
-      csv += `\nTotale per dipendente (oggi)\n`;
-      csv += `Dipendente;Totale\n`;
-      Object.entries(rep.byEmp)
-        .sort((a,b)=>b[1]-a[1])
-        .forEach(([emp,val])=>{
-          csv += `${emp};${(Number(val)||0).toFixed(2)}\n`;
-        });
+      // per banca
+      for(const [bank,val] of Object.entries(s.byBank).sort((a,b)=>b[1]-a[1])){
+        lines.push([date,"BANCA", `"${bank.replace(/"/g,'""')}"`, (val||0).toFixed(2)].join(","));
+      }
 
-      csv += `\nMovimenti (oggi)\n`;
-      csv += `Ora;Banca;Dipendente;Tipo;Delta\n`;
-      rep.rowsLogs.forEach(e=>{
-        const t = new Date(e.ts);
-        const hh = String(t.getHours()).padStart(2,'0');
-        const mi = String(t.getMinutes()).padStart(2,'0');
-        const ss = String(t.getSeconds()).padStart(2,'0');
-        csv += `${hh}:${mi}:${ss};${e.bank};${e.emp};${e.kind};${(Number(e.delta)||0).toFixed(2)}\n`;
-      });
+      // per dipendente
+      for(const [emp,val] of Object.entries(s.byEmp).sort((a,b)=>b[1]-a[1])){
+        lines.push([date,"DIPENDENTE", `"${emp.replace(/"/g,'""')}"`, (val||0).toFixed(2)].join(","));
+      }
 
-      downloadBlob(`moneytrack_${dateStr}.csv`, "text/csv;charset=utf-8", csv);
+      const csv = lines.join("\n");
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `moneytrack-${date}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
       haptic("success");
     }
 
     function exportTodayPDF(){
-      const dateStr = getTodayDateStr();
-      const rep = buildTodayReport();
+      const s = computeTodayStats();
+      const date = todayLabel();
 
-      // jsPDF (caricato via CDN)
-      const { jsPDF } = (window.jspdf || {});
-      if(!jsPDF){
-        alert("jsPDF non è stato caricato. Controlla connessione/CDN.");
-        haptic("error");
-        return;
-      }
+      const banksRows = Object.entries(s.byBank).sort((a,b)=>b[1]-a[1])
+        .map(([bank,val]) => `<tr><td>${escapeHtml(bank)}</td><td style="text-align:right;font-weight:800;">${formatEUR(val)}</td></tr>`).join("");
 
-      const doc = new jsPDF({ unit: "pt", format: "a4" });
-      const pageW = doc.internal.pageSize.getWidth();
-      const margin = 40;
-      let y = 50;
+      const empRows = Object.entries(s.byEmp).sort((a,b)=>b[1]-a[1])
+        .map(([emp,val]) => `<tr><td>${escapeHtml(emp)}</td><td style="text-align:right;font-weight:800;">${formatEUR(val)}</td></tr>`).join("");
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("MoneyTrack Pro — Report Giornaliero", margin, y);
-      y += 22;
+      const topText = s.topEmp ? `${escapeHtml(s.topEmp)} — ${formatEUR(s.topVal)}` : "Nessun movimento";
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.text(`Data: ${dateStr}`, margin, y);
-      y += 18;
+      const w = window.open("", "_blank");
+      if(!w){ alert("Popup bloccato: abilita i popup per esportare in PDF."); return; }
 
-      doc.setFont("helvetica", "bold");
-      doc.text(`Totale giornaliero: ${formatEUR(rep.stats.totalToday)}`, margin, y);
-      y += 26;
+      w.document.write(`
+        <html lang="it">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>MoneyTrack Report ${date}</title>
+          <style>
+            body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:24px; color:#111827;}
+            .top{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
+            .logo{width:54px;height:54px;border-radius:14px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;}
+            .logo img{width:100%;height:100%;object-fit:contain;transform:scale(1.08);}
+            h1{font-size:20px;margin:0;}
+            .muted{color:#6b7280;font-weight:700;font-size:12px;margin-top:4px;}
+            .card{border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin:14px 0;}
+            .big{font-size:22px;font-weight:900;}
+            table{width:100%;border-collapse:collapse;}
+            td{padding:10px 6px;border-bottom:1px solid #f3f4f6;}
+            .section{font-weight:900;margin-top:10px;}
+            @media print { .no-print{display:none;} body{padding:0;} }
+          </style>
+        </head>
+        <body>
+          <div class="top">
+            <div class="logo"><img src="${LOGO_SRC}" alt="MoneyTrack"></div>
+            <div>
+              <h1>MoneyTrack — Report Giornaliero</h1>
+              <div class="muted">Data: ${date}</div>
+            </div>
+          </div>
 
-      // Top employee
-      doc.setFont("helvetica", "bold");
-      doc.text("Chi ha contato di più", margin, y);
-      y += 16;
-      doc.setFont("helvetica", "normal");
-      const topText = rep.stats.topEmp ? `${rep.stats.topEmp} — ${formatEUR(rep.stats.topVal)}` : "Nessun movimento oggi";
-      doc.text(topText, margin, y);
-      y += 26;
+          <div class="card">
+            <div class="section">Totale giornaliero</div>
+            <div class="big">${formatEUR(s.totalToday)}</div>
+          </div>
 
-      // Totale per banca
-      doc.setFont("helvetica", "bold");
-      doc.text("Totale per banca (oggi)", margin, y);
-      y += 16;
+          <div class="card">
+            <div class="section">Chi ha contato di più 👀</div>
+            <div style="font-weight:900; font-size:16px; margin-top:6px;">${topText}</div>
+          </div>
 
-      doc.setFont("helvetica", "normal");
-      const banksSorted = Object.entries(rep.stats.byBank).sort((a,b)=>b[1]-a[1]);
-      if(banksSorted.length === 0){
-        doc.text("Nessun dato.", margin, y);
-        y += 18;
-      } else {
-        for(const [bank,val] of banksSorted){
-          doc.text(`${bank}: ${formatEUR(val)}`, margin, y);
-          y += 16;
-          if(y > 780){ doc.addPage(); y = 50; }
-        }
-      }
+          <div class="card">
+            <div class="section">Totale per banca</div>
+            <table>${banksRows || "<tr><td colspan='2' style='color:#6b7280;'>Nessun dato</td></tr>"}</table>
+          </div>
 
-      y += 10;
+          <div class="card">
+            <div class="section">Totale per dipendente</div>
+            <table>${empRows || "<tr><td colspan='2' style='color:#6b7280;'>Nessun dato</td></tr>"}</table>
+          </div>
 
-      // Totale per dipendente
-      doc.setFont("helvetica", "bold");
-      doc.text("Totale per dipendente (oggi)", margin, y);
-      y += 16;
+          <button class="no-print" onclick="window.print()" style="margin-top:10px;padding:12px 14px;border:none;border-radius:12px;background:#2563eb;color:white;font-weight:900;cursor:pointer;">
+            Stampa / Salva come PDF
+          </button>
+        </body>
+        </html>
+      `);
 
-      doc.setFont("helvetica", "normal");
-      const empSorted = Object.entries(rep.byEmp).sort((a,b)=>b[1]-a[1]);
-      if(empSorted.length === 0){
-        doc.text("Nessun dato.", margin, y);
-        y += 18;
-      } else {
-        for(const [emp,val] of empSorted){
-          doc.text(`${emp}: ${formatEUR(val)}`, margin, y);
-          y += 16;
-          if(y > 780){ doc.addPage(); y = 50; }
-        }
-      }
-
-      doc.save(`moneytrack_${dateStr}.pdf`);
+      w.document.close();
       haptic("success");
     }
 
-    // ===== keypad =====
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // ========= Keypad =========
     function addDigit(d){
-      haptic("tick");
+      haptic("key");
       const f = state.inputField;
       let cur = state[f];
       if(cur === '0') state[f] = d;
@@ -622,13 +559,13 @@
       render();
     }
     function addDecimal(){
-      haptic("tick");
+      haptic("key");
       const f = state.inputField;
       if(!state[f].includes('.')) state[f] += '.';
       render();
     }
     function deleteDigit(){
-      haptic("light");
+      haptic("tap");
       const f = state.inputField;
       let cur = state[f];
       state[f] = (cur.length > 1) ? cur.slice(0,-1) : '0';
@@ -636,13 +573,14 @@
       render();
     }
     function clearInput(){
-      haptic("light");
+      haptic("tap");
       state[state.inputField] = '0';
       render();
     }
 
+    // ========= Core actions =========
     function setMode(mode){
-      haptic("light");
+      haptic("nav");
       state.mode = mode;
       state.amount = '0';
       state.rejected = '0';
@@ -650,8 +588,44 @@
       render();
     }
     function setInputField(field){
-      haptic("light");
+      haptic("tap");
       state.inputField = field;
+      render();
+    }
+
+    // ✅ Valore iniziale: imposta manualmente il totale del dipendente
+    function setInitialValue(){
+      const key = getKey(state.selectedBank, state.selectedEmployee);
+      const current = state.totals[key] || 0;
+
+      const raw = prompt("Inserisci il VALORE INIZIALE per questo dipendente (es. 1234.56):", String(current.toFixed(2)));
+      if(raw === null) return;
+
+      const v = safeParse(raw.replace(",", "."));
+      if(v < 0){
+        haptic("error");
+        alert("Valore non valido.");
+        return;
+      }
+
+      const delta = v - current;
+      state.totals[key] = v;
+
+      state.lastOp = {
+        key,
+        delta, // per undo
+        bank: state.selectedBank,
+        prevMachine: state.lastMachineValue[state.selectedBank] || 0,
+        type: 'init'
+      };
+
+      // logga solo la differenza per le statistiche
+      if(delta !== 0){
+        pushLog(delta, "init", { note: "Valore iniziale" });
+      }
+
+      save();
+      haptic("success");
       render();
     }
 
@@ -662,7 +636,10 @@
       const currentTotal = state.totals[key] || 0;
 
       const currentMachineValue = safeParse(state.amount);
-      if(currentMachineValue <= 0){ haptic("error"); return; }
+      if(currentMachineValue <= 0){
+        haptic("warn");
+        return;
+      }
 
       const lastValue = state.lastMachineValue[state.selectedBank] || 0;
       const delta = currentMachineValue - lastValue;
@@ -699,8 +676,6 @@
 
       if(state.mode === 'manual'){
         add = safeParse(state.amount);
-        if(add === 0){ haptic("error"); return; }
-
         state.lastOp = {
           key,
           delta: add,
@@ -709,15 +684,16 @@
           type: 'manual'
         };
       } else {
-        if(state.machineConfirmed[state.selectedBank] !== true){ haptic("error"); return; }
+        if(state.machineConfirmed[state.selectedBank] !== true){
+          haptic("warn");
+          return;
+        }
 
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
         const rejectedAmount = safeParse(state.rejected);
 
         if(state.inputField === 'rejected'){
           add = rejectedAmount;
-          if(add === 0){ haptic("error"); return; }
-
           state.lastOp = {
             key,
             delta: add,
@@ -728,7 +704,6 @@
         } else {
           const currentMachineValue = safeParse(state.amount);
           add = (currentMachineValue - lastValue) + rejectedAmount;
-          if(add === 0){ haptic("error"); return; }
 
           state.lastOp = {
             key,
@@ -758,7 +733,10 @@
 
     function undoLast(){
       const op = state.lastOp;
-      if(!op || !op.key){ haptic("error"); return; }
+      if(!op || !op.key){
+        haptic("warn");
+        return;
+      }
 
       const cur = state.totals[op.key] || 0;
       state.totals[op.key] = cur - (op.delta || 0);
@@ -775,7 +753,7 @@
 
       state.lastOp = null;
       save();
-      haptic("light");
+      haptic("tap");
       render();
     }
 
@@ -787,12 +765,12 @@
       state.rejected = '0';
       state.lastOp = null;
       save();
-      haptic("heavy");
+      haptic("error");
       render();
     }
 
     function resetMachine(){
-      if(!confirm("Reset selezionatrice per questa banca?")) return;
+      // reset “forte”
       state.lastMachineValue[state.selectedBank] = 0;
       state.machineConfirmed[state.selectedBank] = false;
       state.amount = '0';
@@ -800,40 +778,42 @@
       state.inputField = 'amount';
       state.lastOp = null;
       save();
-      haptic("heavy");
+      haptic("error");
       render();
     }
 
-    // ===== UI helpers =====
-    function headerHTML(rightButtonsHTML, backHTML = '', titleOverride = 'MoneyTrack Pro'){
+    function zeroMachineQuick(){
+      // reset rapido (stesso effetto, ma senza toccare gli input se non vuoi)
+      state.lastMachineValue[state.selectedBank] = 0;
+      state.machineConfirmed[state.selectedBank] = false;
+      save();
+      haptic("error");
+      render();
+    }
+
+    // ========= UI helpers =========
+    function headerHTML(titleRightButtonsHTML, backHTML = ''){
       return `
         <div class="header">
           <div class="header-left">
             ${backHTML || ''}
             <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
-            <div class="header-title">${titleOverride}</div>
+            <div class="header-title">MoneyTrack Pro</div>
           </div>
-          <div style="display:flex; gap:10px">${rightButtonsHTML || ''}</div>
+          <div style="display:flex; gap:10px">${titleRightButtonsHTML || ''}</div>
         </div>
       `;
     }
 
-    function go(screen){
-      haptic("light");
-      state.screen = screen;
-      render();
-    }
-
-    // ===== Render =====
     function render(){
       const app = document.getElementById('app');
 
       if(state.screen === 'banks'){
         app.innerHTML = `
           ${headerHTML(`
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="go('stats')">📊</button>
-            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="go('info')">ℹ️</button>
-          `, '', 'MoneyTrack Pro')}
+            <button class="btn btn-mini" style="background:#374151; width:44px" onclick="haptic('nav'); state.screen='stats'; render()">📊</button>
+            <button class="btn btn-mini" style="background:#374151; width:44px" onclick="haptic('nav'); state.screen='info'; render()">ℹ️</button>
+          `)}
 
           <div class="logo-container">
             <div class="logo-icon">
@@ -848,7 +828,7 @@
 
           <div class="content">
             ${banks.map(b => `
-              <div class="list-item" onclick="state.selectedBank='${b}'; go('employees')">
+              <div class="list-item" onclick="haptic('nav'); state.selectedBank='${b}'; state.screen='employees'; render()">
                 <span style="font-weight:900">${b}</span>
                 <span style="color:#9ca3af">›</span>
               </div>
@@ -860,11 +840,9 @@
 
       if(state.screen === 'info'){
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="go('banks')">‹</button>`, 'Info')}
-
+          ${headerHTML('', `<button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
-              <!-- ✅ stesso crop + aria del logo -->
               <div class="logo-icon" style="margin:0 auto 18px;">
                 <img class="logo-img" src="${LOGO_SRC}" alt="MoneyTrack logo">
               </div>
@@ -896,14 +874,10 @@
           `).join('');
 
         app.innerHTML = `
-          ${headerHTML(
-            `
-              <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="exportTodayCSV()">CSV</button>
-              <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="exportTodayPDF()">PDF</button>
-            `,
-            `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="go('banks')">‹</button>`,
-            'Statistiche'
-          )}
+          ${headerHTML(`
+            <button class="btn btn-mini" style="background:#374151;" onclick="exportTodayCSV()">CSV</button>
+            <button class="btn btn-mini" style="background:#374151;" onclick="exportTodayPDF()">PDF</button>
+          `, `<button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>`)}
 
           <div class="content" style="background:#fff">
             <div class="display-box" style="background:var(--dark); color:white">
@@ -923,9 +897,9 @@
             ${rows || `<div style="padding:16px; color:#6b7280">Nessun dato per oggi.</div>`}
 
             <div style="padding:16px;">
-              <div style="color:#6b7280; font-size:12px; font-weight:800;">
-                Export: include Totale per banca, Totale per dipendente e movimenti di oggi.
-              </div>
+              <button class="btn btn-outline" style="width:100%;" onclick="exportTodayCSV()">⬇️ Esporta CSV</button>
+              <div style="height:10px;"></div>
+              <button class="btn btn-outline" style="width:100%;" onclick="exportTodayPDF()">🖨️ Esporta PDF</button>
             </div>
           </div>
         `;
@@ -936,29 +910,22 @@
         app.innerHTML = `
           <div class="header header-blue">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="go('banks')">‹</button>
+              <button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedBank}</div>
             </div>
-            <div style="width:40px"></div>
+            <div style="display:flex; gap:10px">
+              <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="haptic('nav'); state.screen='stats'; render()">📊</button>
+            </div>
           </div>
 
           <div class="content">
             ${employees.map(e => {
-              const key = getKey(state.selectedBank, e);
-              const total = state.totals[key] || 0;
+              const total = state.totals[getKey(state.selectedBank, e)] || 0;
               return `
-                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render(); haptic('light');">
-                  <div class="list-left">
-                    <div class="list-name">${e}</div>
-                  </div>
-
-                  <div class="list-actions">
-                    <div style="font-weight:900; color:var(--success)">${formatEUR(total)}</div>
-
-                    <!-- ✅ Valore iniziale -->
-                    <button class="mini-btn blue" onclick="event.stopPropagation(); setInitialForEmployee('${e}')">✎</button>
-                  </div>
+                <div class="list-item" onclick="haptic('nav'); state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
+                  <span style="font-weight:800">${e}</span>
+                  <span style="font-weight:900; color:var(--success)">${formatEUR(total)}</span>
                 </div>
               `;
             }).join('')}
@@ -989,11 +956,13 @@
         app.innerHTML = `
           <div class="header header-gray">
             <div class="header-left">
-              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="go('employees')">‹</button>
+              <button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='employees'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedEmployee}</div>
             </div>
-            <div style="width:40px"></div>
+            <div style="display:flex; gap:10px">
+              <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="setInitialValue()">INIZIO</button>
+            </div>
           </div>
 
           <div class="mode-selector">
@@ -1007,20 +976,17 @@
               <div class="display-value">${formatEUR(total)}</div>
             </div>
 
-            <!-- ✅ Imposta valore iniziale anche da qui -->
-            <div style="padding:0 15px 10px;">
-              <button class="btn btn-outline" style="width:100%;" onclick="setInitialForEmployee('${state.selectedEmployee}')">
-                Imposta valore iniziale
-              </button>
-            </div>
-
             ${state.mode === 'auto' ? `
               <div style="background:#4b5563; color:white; padding:10px 12px; text-align:center;">
                 <div style="font-size:12px; font-weight:900;">
                   Selezionatrice (ultimo): <span style="opacity:.95">${formatEUR(lastValue)}</span>
                 </div>
-                <div style="margin-top:6px; font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
-                  ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
+
+                <div class="machine-row">
+                  <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="zeroMachineQuick()">AZZERA</button>
+                  <span style="font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
+                    ${state.machineConfirmed[state.selectedBank] ? '✔ Confermato' : '⚠ Conferma prima di OK'}
+                  </span>
                 </div>
               </div>
 
