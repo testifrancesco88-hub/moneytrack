@@ -2,20 +2,33 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+
+  <!-- ✅ Viewport iOS -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <!-- ✅ PWA / iOS standalone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MoneyTrack">
   <meta name="theme-color" content="#111827">
+
   <title>MoneyTrack - Pro</title>
 
-  <!-- ✅ PWA Icons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/favicon-16x16.png">
+  <!-- ✅ iOS Home Screen Icon (usa file REALI) -->
+  <!-- iOS usa principalmente 180x180 -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon-180.png?v=4">
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="./assets/icon-180.png?v=4">
 
-  <!-- ✅ Manifest inline (ok anche così) -->
-  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
+  <!-- (Extra) non sempre usati da iOS, ma ok tenerli -->
+  <link rel="apple-touch-icon" sizes="192x192" href="./assets/icon-192.png?v=4">
+  <link rel="apple-touch-icon" sizes="512x512" href="./assets/icon-512.png?v=4">
+
+  <!-- ✅ Favicon (desktop / Android browser) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=4">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/icon-512.png?v=4">
+
+  <!-- ✅ Manifest (meglio FILE vero, e tu ce l’hai già) -->
+  <link rel="manifest" href="./manifest.webmanifest?v=4">
 
   <style>
     :root{
@@ -27,12 +40,6 @@
       --slate:#374151;
       --purple:#7c3aed;
       --cyan:#0ea5e9;
-
-      /* ✅ Logo tuning */
-      --logoBox: 112px;    /* più grande = più leggibile */
-      --logoRadius: 26px;
-      --logoZoom: 1.12;    /* meno zoom = si legge “MoneyTrack” */
-      --logoPad: 10px;     /* aria attorno */
     }
 
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -60,15 +67,16 @@
       transform:scale(1.02);
       pointer-events:none;
     }
-    .splash-card{display:flex; flex-direction:column; align-items:center; gap:14px;}
+    .splash-card{
+      display:flex; flex-direction:column; align-items:center; gap:14px;
+    }
     .splash-logo{
-      width:108px; height:108px;
-      border-radius:28px;
+      width:92px; height:92px;
+      border-radius:24px;
       background:rgba(255,255,255,0.08);
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
-      padding:12px;
     }
     .splash-title{
       font-weight:900;
@@ -110,64 +118,50 @@
       min-width:120px;
     }
     .header-logo{
-      width:28px;
-      height:28px;
-      border-radius:9px;
+      width:26px;
+      height:26px;
+      border-radius:8px;
       background:rgba(255,255,255,0.10);
       overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:3px;
     }
     .header-logo img{
       width:100%;
       height:100%;
-      object-fit:contain;
-      transform:scale(1.05);
-      display:block;
+      object-fit:cover;
+      transform:scale(1.35);
     }
     .header-title{
       font-weight:900;
       font-size:14px;
       letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:180px;
     }
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
-    /* ✅ Riquadro logo home: più grande + aria + leggibile */
     .logo-icon{
-      width:var(--logoBox);
-      height:var(--logoBox);
-      margin:0 auto 12px;
-      border-radius:var(--logoRadius);
-      background:rgba(255,255,255,0.08);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      width:92px;height:92px;margin:0 auto 12px;
+      border-radius:24px;
+      background:rgba(255,255,255,0.07);
+      display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
-      padding:var(--logoPad);
     }
 
     .logo-img{
       width:100%;
       height:100%;
-      object-fit:contain;        /* ✅ mostra la scritta */
-      transform:scale(var(--logoZoom)); /* ✅ micro-crop per togliere bordi */
+      object-fit:cover;
+      transform:scale(1.35);
       display:block;
     }
 
     .logo-text{
-      font-size:24px;
-      font-weight:900;
+      font-size:24px;font-weight:900;
       background:linear-gradient(135deg,#06b6d4,#3b82f6);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     }
 
     .list-item{
@@ -192,13 +186,6 @@
     .btn-outline{background:#e5e7eb;color:#374151;}
     .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
 
-    .btn-mini{
-      padding:8px 10px;
-      border-radius:10px;
-      font-size:12px;
-      font-weight:900;
-    }
-
     .display-box{padding:15px;text-align:center;position:relative;}
     .display-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px;}
     .display-value{font-size:32px;font-weight:900;font-variant-numeric:tabular-nums;}
@@ -211,21 +198,13 @@
     }
     .mode-btn.active{background:white;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,0.1);}
 
-    .field-selector{display:flex;gap:8px;padding:10px;justify-content:center;background:#4b5563; align-items:center;}
+    .field-selector{display:flex;gap:8px;padding:10px;justify-content:center;background:#4b5563;}
     .field-btn{
       padding:8px 16px;border:none;border-radius:20px;
       background:rgba(255,255,255,0.2);color:white;font-size:11px;font-weight:900;
       cursor:pointer;
     }
     .field-btn.active{background:white;color:#374151;}
-
-    .machine-row{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:10px;
-      padding-top:8px;
-    }
 
     .keypad{
       display:grid;grid-template-columns:repeat(3,1fr);
@@ -261,10 +240,9 @@
       font-size:12px;font-weight:900;color:#06b6d4;margin-bottom:15px;
     }
 
-    /* Responsive automatico per altezza */
     @media (max-height: 720px){
-      :root{ --logoBox: 100px; --logoRadius: 24px; --logoPad: 9px; --logoZoom: 1.10; }
       .logo-container{padding:18px 15px;}
+      .logo-icon{width:84px;height:84px;border-radius:20px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -273,11 +251,10 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      :root{ --logoBox: 94px; --logoRadius: 22px; --logoPad: 8px; --logoZoom: 1.08; }
+      .logo-icon{width:78px;height:78px;border-radius:18px;}
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
-      .btn-mini{padding:7px 9px;font-size:11px;}
     }
   </style>
 </head>
@@ -287,7 +264,7 @@
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img src="./assets/moneytrack-logo.png" alt="MoneyTrack" style="width:100%;height:100%;object-fit:contain;transform:scale(1.08);display:block;">
+        <img id="splashImg" src="./assets/icon-512.png?v=4" alt="MoneyTrack" style="width:100%;height:100%;object-fit:cover;transform:scale(1.15)">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -297,13 +274,13 @@
   <div id="app"></div>
 
   <script>
-    // ✅ Percorsi (GitHub Pages safe)
-    const LOGO_SRC = "./assets/moneytrack-logo.png";
+    // ✅ Usa l’icona “pulita” (meglio di moneytrack-logo.png per header/splash)
+    const LOGO_SRC = "./assets/icon-512.png?v=4";
 
     const banks = ['Euronet','Chianti Banca','CCB','CRV','Medio Banca','MPS','MPS PG','Intesa S.Paolo'];
     const employees = ['Francesco','Silvia','Dorota','William','Stefania','Filomena','Valeria','Flavio','Ciro','Alessandro','Ida'];
 
-    const STORAGE_KEY = "moneytrack_pro_v3";
+    const STORAGE_KEY = "moneytrack_pro_v2";
 
     let state = {
       screen: 'banks',
@@ -319,25 +296,6 @@
       lastOp: null,
       logs: []
     };
-
-    // ========= HAPTIC / VIBRATION =========
-    function haptic(type = "tap"){
-      // iOS Safari spesso non supporta vibrate: qui non succede nulla, ma non rompe.
-      if (!("vibrate" in navigator)) return;
-
-      // pattern leggeri
-      const patterns = {
-        tap: 8,
-        key: 6,
-        nav: 10,
-        success: [14, 20, 10],
-        warn: [20, 30, 20],
-        error: [30, 40, 30]
-      };
-      try{
-        navigator.vibrate(patterns[type] ?? patterns.tap);
-      }catch(e){}
-    }
 
     function getKey(bank, emp){ return `${bank}|||${emp}`; }
 
@@ -383,15 +341,14 @@
       }
     }
 
-    function pushLog(delta, kind, meta = {}){
+    function pushLog(delta, kind){
       state.logs = state.logs || [];
       state.logs.push({
         ts: new Date().toISOString(),
         bank: state.selectedBank,
         emp: state.selectedEmployee,
         delta: Number(delta) || 0,
-        kind,
-        ...meta
+        kind
       });
     }
 
@@ -424,134 +381,7 @@
       return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
-    // ========= EXPORT =========
-    function todayLabel(){
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const day = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function exportTodayCSV(){
-      const s = computeTodayStats();
-      const date = todayLabel();
-
-      const lines = [];
-      lines.push(["Data","Sezione","Nome","Valore"].join(","));
-
-      lines.push([date,"TOTALE_GIORNALIERO","", (s.totalToday||0).toFixed(2)].join(","));
-
-      // per banca
-      for(const [bank,val] of Object.entries(s.byBank).sort((a,b)=>b[1]-a[1])){
-        lines.push([date,"BANCA", `"${bank.replace(/"/g,'""')}"`, (val||0).toFixed(2)].join(","));
-      }
-
-      // per dipendente
-      for(const [emp,val] of Object.entries(s.byEmp).sort((a,b)=>b[1]-a[1])){
-        lines.push([date,"DIPENDENTE", `"${emp.replace(/"/g,'""')}"`, (val||0).toFixed(2)].join(","));
-      }
-
-      const csv = lines.join("\n");
-      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `moneytrack-${date}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      URL.revokeObjectURL(url);
-      haptic("success");
-    }
-
-    function exportTodayPDF(){
-      const s = computeTodayStats();
-      const date = todayLabel();
-
-      const banksRows = Object.entries(s.byBank).sort((a,b)=>b[1]-a[1])
-        .map(([bank,val]) => `<tr><td>${escapeHtml(bank)}</td><td style="text-align:right;font-weight:800;">${formatEUR(val)}</td></tr>`).join("");
-
-      const empRows = Object.entries(s.byEmp).sort((a,b)=>b[1]-a[1])
-        .map(([emp,val]) => `<tr><td>${escapeHtml(emp)}</td><td style="text-align:right;font-weight:800;">${formatEUR(val)}</td></tr>`).join("");
-
-      const topText = s.topEmp ? `${escapeHtml(s.topEmp)} — ${formatEUR(s.topVal)}` : "Nessun movimento";
-
-      const w = window.open("", "_blank");
-      if(!w){ alert("Popup bloccato: abilita i popup per esportare in PDF."); return; }
-
-      w.document.write(`
-        <html lang="it">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>MoneyTrack Report ${date}</title>
-          <style>
-            body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:24px; color:#111827;}
-            .top{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
-            .logo{width:54px;height:54px;border-radius:14px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;}
-            .logo img{width:100%;height:100%;object-fit:contain;transform:scale(1.08);}
-            h1{font-size:20px;margin:0;}
-            .muted{color:#6b7280;font-weight:700;font-size:12px;margin-top:4px;}
-            .card{border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin:14px 0;}
-            .big{font-size:22px;font-weight:900;}
-            table{width:100%;border-collapse:collapse;}
-            td{padding:10px 6px;border-bottom:1px solid #f3f4f6;}
-            .section{font-weight:900;margin-top:10px;}
-            @media print { .no-print{display:none;} body{padding:0;} }
-          </style>
-        </head>
-        <body>
-          <div class="top">
-            <div class="logo"><img src="${LOGO_SRC}" alt="MoneyTrack"></div>
-            <div>
-              <h1>MoneyTrack — Report Giornaliero</h1>
-              <div class="muted">Data: ${date}</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="section">Totale giornaliero</div>
-            <div class="big">${formatEUR(s.totalToday)}</div>
-          </div>
-
-          <div class="card">
-            <div class="section">Chi ha contato di più 👀</div>
-            <div style="font-weight:900; font-size:16px; margin-top:6px;">${topText}</div>
-          </div>
-
-          <div class="card">
-            <div class="section">Totale per banca</div>
-            <table>${banksRows || "<tr><td colspan='2' style='color:#6b7280;'>Nessun dato</td></tr>"}</table>
-          </div>
-
-          <div class="card">
-            <div class="section">Totale per dipendente</div>
-            <table>${empRows || "<tr><td colspan='2' style='color:#6b7280;'>Nessun dato</td></tr>"}</table>
-          </div>
-
-          <button class="no-print" onclick="window.print()" style="margin-top:10px;padding:12px 14px;border:none;border-radius:12px;background:#2563eb;color:white;font-weight:900;cursor:pointer;">
-            Stampa / Salva come PDF
-          </button>
-        </body>
-        </html>
-      `);
-
-      w.document.close();
-      haptic("success");
-    }
-
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-      }[m]));
-    }
-
-    // ========= Keypad =========
     function addDigit(d){
-      haptic("key");
       const f = state.inputField;
       let cur = state[f];
       if(cur === '0') state[f] = d;
@@ -559,13 +389,11 @@
       render();
     }
     function addDecimal(){
-      haptic("key");
       const f = state.inputField;
       if(!state[f].includes('.')) state[f] += '.';
       render();
     }
     function deleteDigit(){
-      haptic("tap");
       const f = state.inputField;
       let cur = state[f];
       state[f] = (cur.length > 1) ? cur.slice(0,-1) : '0';
@@ -573,14 +401,11 @@
       render();
     }
     function clearInput(){
-      haptic("tap");
       state[state.inputField] = '0';
       render();
     }
 
-    // ========= Core actions =========
     function setMode(mode){
-      haptic("nav");
       state.mode = mode;
       state.amount = '0';
       state.rejected = '0';
@@ -588,44 +413,7 @@
       render();
     }
     function setInputField(field){
-      haptic("tap");
       state.inputField = field;
-      render();
-    }
-
-    // ✅ Valore iniziale: imposta manualmente il totale del dipendente
-    function setInitialValue(){
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      const current = state.totals[key] || 0;
-
-      const raw = prompt("Inserisci il VALORE INIZIALE per questo dipendente (es. 1234.56):", String(current.toFixed(2)));
-      if(raw === null) return;
-
-      const v = safeParse(raw.replace(",", "."));
-      if(v < 0){
-        haptic("error");
-        alert("Valore non valido.");
-        return;
-      }
-
-      const delta = v - current;
-      state.totals[key] = v;
-
-      state.lastOp = {
-        key,
-        delta, // per undo
-        bank: state.selectedBank,
-        prevMachine: state.lastMachineValue[state.selectedBank] || 0,
-        type: 'init'
-      };
-
-      // logga solo la differenza per le statistiche
-      if(delta !== 0){
-        pushLog(delta, "init", { note: "Valore iniziale" });
-      }
-
-      save();
-      haptic("success");
       render();
     }
 
@@ -636,10 +424,7 @@
       const currentTotal = state.totals[key] || 0;
 
       const currentMachineValue = safeParse(state.amount);
-      if(currentMachineValue <= 0){
-        haptic("warn");
-        return;
-      }
+      if(currentMachineValue <= 0) return;
 
       const lastValue = state.lastMachineValue[state.selectedBank] || 0;
       const delta = currentMachineValue - lastValue;
@@ -665,7 +450,6 @@
       state.inputField = 'rejected';
 
       save();
-      haptic("success");
       render();
     }
 
@@ -684,10 +468,7 @@
           type: 'manual'
         };
       } else {
-        if(state.machineConfirmed[state.selectedBank] !== true){
-          haptic("warn");
-          return;
-        }
+        if(state.machineConfirmed[state.selectedBank] !== true) return;
 
         const lastValue = state.lastMachineValue[state.selectedBank] || 0;
         const rejectedAmount = safeParse(state.rejected);
@@ -727,16 +508,12 @@
       state.inputField = 'amount';
 
       save();
-      haptic("success");
       render();
     }
 
     function undoLast(){
       const op = state.lastOp;
-      if(!op || !op.key){
-        haptic("warn");
-        return;
-      }
+      if(!op || !op.key) return;
 
       const cur = state.totals[op.key] || 0;
       state.totals[op.key] = cur - (op.delta || 0);
@@ -753,24 +530,20 @@
 
       state.lastOp = null;
       save();
-      haptic("tap");
       render();
     }
 
     function resetTotal(){
       const key = getKey(state.selectedBank, state.selectedEmployee);
-      if(!confirm("Reset totale dipendente?")) return;
       state.totals[key] = 0;
       state.amount = '0';
       state.rejected = '0';
       state.lastOp = null;
       save();
-      haptic("error");
       render();
     }
 
     function resetMachine(){
-      // reset “forte”
       state.lastMachineValue[state.selectedBank] = 0;
       state.machineConfirmed[state.selectedBank] = false;
       state.amount = '0';
@@ -778,20 +551,9 @@
       state.inputField = 'amount';
       state.lastOp = null;
       save();
-      haptic("error");
       render();
     }
 
-    function zeroMachineQuick(){
-      // reset rapido (stesso effetto, ma senza toccare gli input se non vuoi)
-      state.lastMachineValue[state.selectedBank] = 0;
-      state.machineConfirmed[state.selectedBank] = false;
-      save();
-      haptic("error");
-      render();
-    }
-
-    // ========= UI helpers =========
     function headerHTML(titleRightButtonsHTML, backHTML = ''){
       return `
         <div class="header">
@@ -811,8 +573,8 @@
       if(state.screen === 'banks'){
         app.innerHTML = `
           ${headerHTML(`
-            <button class="btn btn-mini" style="background:#374151; width:44px" onclick="haptic('nav'); state.screen='stats'; render()">📊</button>
-            <button class="btn btn-mini" style="background:#374151; width:44px" onclick="haptic('nav'); state.screen='info'; render()">ℹ️</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='stats'; render()">📊</button>
+            <button class="btn" style="background:#374151; padding:8px; width:40px" onclick="state.screen='info'; render()">ℹ️</button>
           `)}
 
           <div class="logo-container">
@@ -828,7 +590,7 @@
 
           <div class="content">
             ${banks.map(b => `
-              <div class="list-item" onclick="haptic('nav'); state.selectedBank='${b}'; state.screen='employees'; render()">
+              <div class="list-item" onclick="state.selectedBank='${b}'; state.screen='employees'; render()">
                 <span style="font-weight:900">${b}</span>
                 <span style="color:#9ca3af">›</span>
               </div>
@@ -840,7 +602,7 @@
 
       if(state.screen === 'info'){
         app.innerHTML = `
-          ${headerHTML('', `<button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>`)}
+          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:var(--gray-bg)">
             <div class="info-card">
               <div class="logo-icon" style="margin:0 auto 18px;">
@@ -852,7 +614,7 @@
               <p style="opacity:0.6; font-size:14px">Software Engineer & Design</p>
 
               <div style="margin-top:26px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; opacity:0.4">
-                MoneyTrack Pro v1.4.0<br>© 2024 Tutti i diritti riservati
+                MoneyTrack Pro v1.3.1<br>© 2024 Tutti i diritti riservati
               </div>
             </div>
           </div>
@@ -874,11 +636,7 @@
           `).join('');
 
         app.innerHTML = `
-          ${headerHTML(`
-            <button class="btn btn-mini" style="background:#374151;" onclick="exportTodayCSV()">CSV</button>
-            <button class="btn btn-mini" style="background:#374151;" onclick="exportTodayPDF()">PDF</button>
-          `, `<button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>`)}
-
+          ${headerHTML('', `<button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>`)}
           <div class="content" style="background:#fff">
             <div class="display-box" style="background:var(--dark); color:white">
               <div class="display-label">Totale giornaliero</div>
@@ -895,12 +653,6 @@
             </div>
 
             ${rows || `<div style="padding:16px; color:#6b7280">Nessun dato per oggi.</div>`}
-
-            <div style="padding:16px;">
-              <button class="btn btn-outline" style="width:100%;" onclick="exportTodayCSV()">⬇️ Esporta CSV</button>
-              <div style="height:10px;"></div>
-              <button class="btn btn-outline" style="width:100%;" onclick="exportTodayPDF()">🖨️ Esporta PDF</button>
-            </div>
           </div>
         `;
         return;
@@ -910,20 +662,18 @@
         app.innerHTML = `
           <div class="header header-blue">
             <div class="header-left">
-              <button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='banks'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='banks'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedBank}</div>
             </div>
-            <div style="display:flex; gap:10px">
-              <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="haptic('nav'); state.screen='stats'; render()">📊</button>
-            </div>
+            <div style="width:40px"></div>
           </div>
 
           <div class="content">
             ${employees.map(e => {
               const total = state.totals[getKey(state.selectedBank, e)] || 0;
               return `
-                <div class="list-item" onclick="haptic('nav'); state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
+                <div class="list-item" onclick="state.selectedEmployee='${e}'; state.screen='counter'; state.amount='0'; state.rejected='0'; state.inputField='amount'; render()">
                   <span style="font-weight:800">${e}</span>
                   <span style="font-weight:900; color:var(--success)">${formatEUR(total)}</span>
                 </div>
@@ -956,13 +706,11 @@
         app.innerHTML = `
           <div class="header header-gray">
             <div class="header-left">
-              <button class="btn btn-mini" style="background:transparent; color:white; font-size:20px" onclick="haptic('nav'); state.screen='employees'; render()">‹</button>
+              <button class="btn" style="background:transparent; color:white; font-size:20px" onclick="state.screen='employees'; render()">‹</button>
               <div class="header-logo"><img src="${LOGO_SRC}" alt="MT"></div>
               <div class="header-title">${state.selectedEmployee}</div>
             </div>
-            <div style="display:flex; gap:10px">
-              <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="setInitialValue()">INIZIO</button>
-            </div>
+            <div style="width:40px"></div>
           </div>
 
           <div class="mode-selector">
@@ -981,12 +729,8 @@
                 <div style="font-size:12px; font-weight:900;">
                   Selezionatrice (ultimo): <span style="opacity:.95">${formatEUR(lastValue)}</span>
                 </div>
-
-                <div class="machine-row">
-                  <button class="btn btn-mini" style="background:rgba(255,255,255,.18)" onclick="zeroMachineQuick()">AZZERA</button>
-                  <span style="font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
-                    ${state.machineConfirmed[state.selectedBank] ? '✔ Confermato' : '⚠ Conferma prima di OK'}
-                  </span>
+                <div style="margin-top:6px; font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
+                  ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
                 </div>
               </div>
 
@@ -1051,7 +795,6 @@
       }
     }
 
-    // init
     load();
     render();
 
