@@ -2,33 +2,28 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-
-  <!-- ✅ Viewport iOS -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-  <!-- ✅ PWA / iOS standalone -->
+  <!-- iOS PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MoneyTrack">
-  <meta name="theme-color" content="#111827">
 
+  <!-- Android/Chrome -->
+  <meta name="theme-color" content="#111827">
   <title>MoneyTrack - Pro</title>
 
-  <!-- ✅ iOS Home Screen Icon (usa file REALI) -->
-  <!-- iOS usa principalmente 180x180 -->
-  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon-180.png?v=4">
-  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="./assets/icon-180.png?v=4">
+  <!-- ✅ iOS Home Screen Icon (questa è LA più importante per iPhone/iPad) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon-180.png?v=2">
+  <!-- opzionale ma utile su alcuni casi -->
+  <link rel="apple-touch-icon-precomposed" href="./assets/icon-180.png?v=2">
 
-  <!-- (Extra) non sempre usati da iOS, ma ok tenerli -->
-  <link rel="apple-touch-icon" sizes="192x192" href="./assets/icon-192.png?v=4">
-  <link rel="apple-touch-icon" sizes="512x512" href="./assets/icon-512.png?v=4">
+  <!-- ✅ Favicons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=2">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/icon-512.png?v=2">
 
-  <!-- ✅ Favicon (desktop / Android browser) -->
-  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=4">
-  <link rel="icon" type="image/png" sizes="512x512" href="./assets/icon-512.png?v=4">
-
-  <!-- ✅ Manifest (meglio FILE vero, e tu ce l’hai già) -->
-  <link rel="manifest" href="./manifest.webmanifest?v=4">
+  <!-- ✅ Manifest reale -->
+  <link rel="manifest" href="./manifest.webmanifest?v=2">
 
   <style>
     :root{
@@ -67,20 +62,17 @@
       transform:scale(1.02);
       pointer-events:none;
     }
-    .splash-card{
-      display:flex; flex-direction:column; align-items:center; gap:14px;
-    }
+    .splash-card{display:flex;flex-direction:column;align-items:center;gap:14px;}
     .splash-logo{
-      width:92px; height:92px;
-      border-radius:24px;
+      width:92px;height:92px;border-radius:24px;
       background:rgba(255,255,255,0.08);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 12px 30px rgba(0,0,0,.35);
+      padding:10px; /* + aria */
     }
     .splash-title{
-      font-weight:900;
-      font-size:22px;
+      font-weight:900;font-size:22px;
       background:linear-gradient(135deg,#06b6d4,#3b82f6);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
@@ -88,19 +80,15 @@
     }
     .splash-sub{
       color:rgba(255,255,255,.55);
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:1px;
-      text-transform:uppercase;
+      font-size:12px;font-weight:800;
+      letter-spacing:1px;text-transform:uppercase;
     }
 
     .header{
       background:var(--dark);
       color:white;
       padding:env(safe-area-inset-top) 16px 14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      display:flex;align-items:center;justify-content:space-between;
       z-index:10;
       box-shadow:0 2px 4px rgba(0,0,0,0.1);
     }
@@ -118,20 +106,17 @@
       min-width:120px;
     }
     .header-logo{
-      width:26px;
-      height:26px;
-      border-radius:8px;
+      width:26px;height:26px;border-radius:8px;
       background:rgba(255,255,255,0.10);
       overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex;align-items:center;justify-content:center;
+      padding:3px; /* un filo di aria */
     }
     .header-logo img{
       width:100%;
       height:100%;
-      object-fit:cover;
-      transform:scale(1.35);
+      object-fit:contain; /* ✅ così non “taglia” e non mostra bordi strani */
+      display:block;
     }
     .header-title{
       font-weight:900;
@@ -141,20 +126,20 @@
 
     .logo-container{text-align:center;padding:26px 20px;background:var(--dark);}
 
+    /* ✅ Riquadro logo home: +20% aria */
     .logo-icon{
-      width:92px;height:92px;margin:0 auto 12px;
+      width:96px;height:96px;margin:0 auto 12px;
       border-radius:24px;
       background:rgba(255,255,255,0.07);
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
       box-shadow:0 10px 25px rgba(0,0,0,0.25);
+      padding:14px;  /* ✅ + aria (prima era “pieno”) */
     }
-
     .logo-img{
       width:100%;
       height:100%;
-      object-fit:cover;
-      transform:scale(1.35);
+      object-fit:contain; /* ✅ non taglia la scritta MoneyTrack */
       display:block;
     }
 
@@ -242,7 +227,7 @@
 
     @media (max-height: 720px){
       .logo-container{padding:18px 15px;}
-      .logo-icon{width:84px;height:84px;border-radius:20px;}
+      .logo-icon{width:88px;height:88px;border-radius:20px;padding:12px;}
       .keypad{gap:8px;padding:12px;}
       .key{height:50px;font-size:20px;border-radius:12px;}
       .btn{padding:12px;font-size:14px;}
@@ -251,7 +236,7 @@
       .header{padding-bottom:12px;}
     }
     @media (max-height: 640px){
-      .logo-icon{width:78px;height:78px;border-radius:18px;}
+      .logo-icon{width:82px;height:82px;border-radius:18px;padding:11px;}
       .key{height:44px;font-size:18px;}
       .display-value{font-size:24px;}
       .btn{padding:10px;font-size:13px;}
@@ -264,7 +249,7 @@
   <div id="splash">
     <div class="splash-card">
       <div class="splash-logo">
-        <img id="splashImg" src="./assets/icon-512.png?v=4" alt="MoneyTrack" style="width:100%;height:100%;object-fit:cover;transform:scale(1.15)">
+        <img src="./assets/icon-512.png" alt="MoneyTrack" style="width:100%;height:100%;object-fit:contain;display:block;">
       </div>
       <div class="splash-title">MoneyTrack</div>
       <div class="splash-sub">Loading…</div>
@@ -274,8 +259,8 @@
   <div id="app"></div>
 
   <script>
-    // ✅ Usa l’icona “pulita” (meglio di moneytrack-logo.png per header/splash)
-    const LOGO_SRC = "./assets/icon-512.png?v=4";
+    // ✅ Usa la tua icona “pulita” anche dentro l’app
+    const LOGO_SRC = "./assets/icon-512.png";
 
     const banks = ['Euronet','Chianti Banca','CCB','CRV','Medio Banca','MPS','MPS PG','Intesa S.Paolo'];
     const employees = ['Francesco','Silvia','Dorota','William','Stefania','Filomena','Valeria','Flavio','Ciro','Alessandro','Ida'];
@@ -381,6 +366,7 @@
       return { totalToday, byBank, byEmp, topEmp, topVal: topVal === -Infinity ? 0 : topVal };
     }
 
+    // keypad
     function addDigit(d){
       const f = state.inputField;
       let cur = state[f];
@@ -414,143 +400,6 @@
     }
     function setInputField(field){
       state.inputField = field;
-      render();
-    }
-
-    function confirmMachineValue(){
-      if(state.mode !== 'auto') return;
-
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      const currentTotal = state.totals[key] || 0;
-
-      const currentMachineValue = safeParse(state.amount);
-      if(currentMachineValue <= 0) return;
-
-      const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-      const delta = currentMachineValue - lastValue;
-
-      state.totals[key] = currentTotal + delta;
-
-      state.lastOp = {
-        key,
-        delta,
-        bank: state.selectedBank,
-        prevMachine: lastValue,
-        newMachine: currentMachineValue,
-        type: 'machine'
-      };
-
-      state.lastMachineValue[state.selectedBank] = currentMachineValue;
-      state.machineConfirmed[state.selectedBank] = true;
-
-      pushLog(delta, "machine");
-
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'rejected';
-
-      save();
-      render();
-    }
-
-    function addToTotal(){
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      const currentTotal = state.totals[key] || 0;
-      let add = 0;
-
-      if(state.mode === 'manual'){
-        add = safeParse(state.amount);
-        state.lastOp = {
-          key,
-          delta: add,
-          bank: state.selectedBank,
-          prevMachine: state.lastMachineValue[state.selectedBank] || 0,
-          type: 'manual'
-        };
-      } else {
-        if(state.machineConfirmed[state.selectedBank] !== true) return;
-
-        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-        const rejectedAmount = safeParse(state.rejected);
-
-        if(state.inputField === 'rejected'){
-          add = rejectedAmount;
-          state.lastOp = {
-            key,
-            delta: add,
-            bank: state.selectedBank,
-            prevMachine: lastValue,
-            type: 'rejected'
-          };
-        } else {
-          const currentMachineValue = safeParse(state.amount);
-          add = (currentMachineValue - lastValue) + rejectedAmount;
-
-          state.lastOp = {
-            key,
-            delta: add,
-            bank: state.selectedBank,
-            prevMachine: lastValue,
-            newMachine: currentMachineValue,
-            type: 'mixed'
-          };
-
-          state.lastMachineValue[state.selectedBank] = currentMachineValue;
-          state.machineConfirmed[state.selectedBank] = true;
-        }
-      }
-
-      state.totals[key] = currentTotal + add;
-      pushLog(add, state.mode === 'manual' ? "manual" : "ok");
-
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-
-      save();
-      render();
-    }
-
-    function undoLast(){
-      const op = state.lastOp;
-      if(!op || !op.key) return;
-
-      const cur = state.totals[op.key] || 0;
-      state.totals[op.key] = cur - (op.delta || 0);
-
-      if(op.bank && op.prevMachine !== undefined){
-        state.lastMachineValue[op.bank] = op.prevMachine || 0;
-      }
-
-      if(state.logs && state.logs.length){
-        const last = state.logs[state.logs.length - 1];
-        const same = last && last.bank === op.bank && last.emp && op.key === getKey(last.bank, last.emp);
-        if(same) state.logs.pop();
-      }
-
-      state.lastOp = null;
-      save();
-      render();
-    }
-
-    function resetTotal(){
-      const key = getKey(state.selectedBank, state.selectedEmployee);
-      state.totals[key] = 0;
-      state.amount = '0';
-      state.rejected = '0';
-      state.lastOp = null;
-      save();
-      render();
-    }
-
-    function resetMachine(){
-      state.lastMachineValue[state.selectedBank] = 0;
-      state.machineConfirmed[state.selectedBank] = false;
-      state.amount = '0';
-      state.rejected = '0';
-      state.inputField = 'amount';
-      state.lastOp = null;
-      save();
       render();
     }
 
@@ -688,21 +537,6 @@
         const key = getKey(state.selectedBank, state.selectedEmployee);
         const total = state.totals[key] || 0;
 
-        const lastValue = state.lastMachineValue[state.selectedBank] || 0;
-        const amountVal = safeParse(state.amount);
-        const rejectedVal = safeParse(state.rejected);
-
-        const okEnabled = (state.mode === 'manual') || (state.machineConfirmed[state.selectedBank] === true);
-
-        const showConfirmMachine =
-          state.mode === 'auto' &&
-          state.inputField === 'amount' &&
-          (amountVal > 0) &&
-          (amountVal !== lastValue);
-
-        const diff = (state.mode === 'auto') ? (amountVal - lastValue) : 0;
-        const calc = (state.mode === 'auto') ? (diff + rejectedVal) : 0;
-
         app.innerHTML = `
           <div class="header header-gray">
             <div class="header-left">
@@ -713,60 +547,16 @@
             <div style="width:40px"></div>
           </div>
 
-          <div class="mode-selector">
-            <button class="mode-btn ${state.mode==='manual' ? 'active':''}" onclick="setMode('manual')">MANUALE</button>
-            <button class="mode-btn ${state.mode==='auto' ? 'active':''}" onclick="setMode('auto')">AUTO DIFF</button>
-          </div>
-
           <div class="content">
             <div class="display-box" style="background:var(--primary); color:white">
               <div class="display-label">Tot. dipendente</div>
               <div class="display-value">${formatEUR(total)}</div>
             </div>
 
-            ${state.mode === 'auto' ? `
-              <div style="background:#4b5563; color:white; padding:10px 12px; text-align:center;">
-                <div style="font-size:12px; font-weight:900;">
-                  Selezionatrice (ultimo): <span style="opacity:.95">${formatEUR(lastValue)}</span>
-                </div>
-                <div style="margin-top:6px; font-size:11px; font-weight:900; color:${state.machineConfirmed[state.selectedBank] ? '#86efac' : '#fbbf24'};">
-                  ${state.machineConfirmed[state.selectedBank] ? '✔ Valore macchina confermato' : '⚠ Conferma il valore macchina prima di OK'}
-                </div>
-              </div>
-
-              <div class="field-selector">
-                <button class="field-btn ${state.inputField==='amount'?'active':''}" onclick="setInputField('amount')">Valore Macchina</button>
-                <button class="field-btn ${state.inputField==='rejected'?'active':''}" onclick="setInputField('rejected')">Scartate</button>
-              </div>
-            ` : ''}
-
             <div class="display-box" style="background:#f9fafb">
-              <div class="display-label" style="color:#6b7280">
-                ${state.mode === 'manual'
-                  ? 'Inserimento'
-                  : (state.inputField === 'amount' ? 'Valore macchina (attuale)' : 'Scartate')}
-              </div>
-
-              <div class="display-value" style="color:var(--dark)">
-                € ${state.inputField === 'amount' ? state.amount : state.rejected}
-              </div>
-
-              ${state.mode === 'auto' && state.inputField === 'amount' && (state.amount !== '0' || state.rejected !== '0') ? `
-                <div style="margin-top:8px; font-size:12px; font-weight:900;">
-                  <span class="pill" style="background:#fde68a; color:#92400e">Diff: ${formatEUR(diff)}</span>
-                  ${rejectedVal ? `<span class="pill" style="background:#fecaca; color:#991b1b; margin-left:8px">+ Scart: ${formatEUR(rejectedVal)}</span>` : ''}
-                  <span class="pill" style="background:#bbf7d0; color:#065f46; margin-left:8px">= ${formatEUR(calc)}</span>
-                </div>
-              ` : ''}
+              <div class="display-label" style="color:#6b7280">Inserimento</div>
+              <div class="display-value" style="color:var(--dark)">€ ${state.amount}</div>
             </div>
-
-            ${showConfirmMachine ? `
-              <div style="padding:0 15px 10px;">
-                <button class="btn" style="width:100%; background:var(--cyan); color:white" onclick="confirmMachineValue()">
-                  ✔ CONFERMA VALORE MACCHINA
-                </button>
-              </div>
-            ` : ''}
 
             <div class="keypad">
               ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" onclick="addDigit('${n}')">${n}</button>`).join('')}
@@ -775,26 +565,22 @@
               <button class="key action" onclick="deleteDigit()">⌫</button>
             </div>
 
-            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:15px; background:#fff;">
-              <button class="btn btn-outline" onclick="undoLast()">UNDO</button>
-              <button class="btn btn-outline" onclick="clearInput()">CLEAR</button>
-              <button class="btn btn-primary" ${okEnabled ? '' : 'disabled'} onclick="${okEnabled ? 'addToTotal()' : ''}">OK</button>
-              <button class="btn btn-danger" onclick="resetTotal()">RESET</button>
+            <div style="padding:15px">
+              <button class="btn btn-primary" style="width:100%" onclick="
+                const k='${key}';
+                state.totals[k]=(state.totals[k]||0)+safeParse(state.amount);
+                state.amount='0';
+                save();
+                render();
+              ">CONFERMA E AGGIUNGI</button>
             </div>
-
-            ${state.mode === 'auto' ? `
-              <div style="padding:0 15px 15px;">
-                <button class="btn btn-outline" style="width:100%; background:var(--purple); color:white" onclick="resetMachine()">
-                  RESET SELEZIONATRICE
-                </button>
-              </div>
-            ` : ''}
           </div>
         `;
         return;
       }
     }
 
+    // init
     load();
     render();
 
