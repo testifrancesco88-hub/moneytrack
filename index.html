@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>MoneyTrack</title>
+  
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
+
+  <style>
+    :root {
+      --bg-color: #111827;
+      --card-bg: #1f2937;
+      --text-main: #ffffff;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    
+    body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
+    /* === Header === */
+    .header {
+      padding: env(safe-area-inset-top) 16px 12px;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #374151;
+      z-index: 10;
+    }
+    .header-title { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+    .btn-icon { background: none; border: none; font-size: 20px; color: var(--text-main); cursor: pointer; padding: 8px; }
+
+    /* === Content Scroll === */
+    .content {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 20px;
+    }
+
+    /* === Lists === */
+    .list-item {
+      padding: 18px 20px;
+      border-bottom: 1px solid #374151;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg-color);
+      transition: background 0.2s;
+    }
+    .list-item:active { background: var(--card-bg); }
+    .item-name { font-size: 16px; font-weight: 500; }
+    .item-val { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--success); }
+
+    /* === Keypad & Inputs === */
+    .counter-ui { display: flex; flex-direction: column; height: 100%; }
+    
+    .display-area {
+      background: var(--card-bg);
+      padding: 20px; text-align: center;
+      border-bottom: 1px solid #374151;
+      flex-shrink: 0;
+    }
+    .total-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .total-amount { font-size: 36px; font-weight: 800; margin: 5px 0; font-variant-numeric: tabular-nums; }
+    
+    .input-row {
+      display: flex; justify-content: center; gap: 10px; margin-top: 10px;
+    }
+    .input-tab {
+      background: #374151; border: 1px solid transparent;
+      color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 12px;
+    }
+    .input-tab.active {
+      background: rgba(59, 130, 246, 0.2); border-color: var(--primary); color: var(--primary); font-weight: 600;
+    }
+
+    .diff-info {
+      font-size: 13px; color: var(--warning); margin-top: 8px; font-family: monospace;
+      background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block;
+    }
+
+    .keypad {
+      flex: 1;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: #374151; /* Grid lines color */
+    }
+    .key {
+      background: var(--card-bg); border: none;
+      font-size: 24px; color: var(--text-main);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .key:active { background: #4b5563; }
+    .key-action { font-size: 16px; font-weight: 600; background: #2d3644; }
+    .key-confirm { background: var(--primary); color: white; grid-column: span 3; font-size: 18px; font-weight: 700; padding: 20px; }
+    .key-confirm.machine { background: var(--accent); } 
+
+    /* === Info Screen === */
+    .info-container {
+      padding: 40px 20px; text-align: center;
+    }
+    .dev-card {
+      background: linear-gradient(145deg, #1f2937, #111827);
+      border: 1px solid #374151; border-radius: 16px; padding: 30px;
+      margin-top: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .logo-svg { width: 80px; height: 80px; margin-bottom: 15px; }
+
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+  // --- DATI ---
+  const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
+  const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
+
+  // --- STATO ---
+  let state = {
+    view: 'banks', // banks, employees, counter, stats, info
+    bank: null,
+    emp: null,
+    totals: {},         // { "Banca|Dipendente": 120.50 }
+    machineValues: {},  // { "Banca": 15000.00 } - Ultimo valore macchina
+    
+    // Counter State
+    inputVal: '0',
+    inputType: 'amount', // 'amount' (manuale/macchina), 'rejected' (scartate)
+    mode: 'auto',        // 'auto' (differenza), 'manual' (somma semplice)
+    logs: []             // Storico per statistiche
+  };
+
+  const STORAGE_KEY = 'moneytrack_db_v2';
+
+  // --- UTILS ---
+  const formatEUR = (n) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
+  const safeFloat = (s) => parseFloat(s) || 0;
+  const getKey = () => `${state.bank}|${state.emp}`;
+
+  // --- PERSISTENZA ---
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      totals: state.totals,
+      machineValues: state.machineValues,
+      logs: state.logs
+    }));
+  }
+
+  function load() {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    state.totals = data.totals || {};
+    state.machineValues = data.machineValues || {};
+    state.logs = data.logs || [];
+  }
+
+  // --- LOGICA CORE (La parte richiesta) ---
+
+  // Aggiunge una cifra al display
+  function digit(n) {
+    if (state.inputVal === '0' && n !== '.') state.inputVal = n;
+    else state.inputVal += n;
+    render();
+  }
+
+  function backspace() {
+    state.inputVal = state.inputVal.length > 1 ? state.inputVal.slice(0, -1) : '0';
+    render();
+  }
+
+  // LOGICA DI DIFFERENZA AUTOMATICA
+  function confirmInput() {
+    const currentInput = safeFloat(state.inputVal);
+    if (currentInput === 0) return;
+
+    const key = getKey();
+    let delta = 0;
+    let typeLog = '';
+
+    if (state.mode === 'auto' && state.inputType === 'amount') {
+      // 1. MODALITA' MACCHINA (Calcolo Differenza)
+      const lastMachine = state.machineValues[state.bank] || 0;
+      
+      // La differenza è: ValoreAttuale - UltimoValoreSalvato
+      delta = currentInput - lastMachine;
+      
+      // Aggiorniamo il valore macchina al nuovo totale
+      state.machineValues[state.bank] = currentInput;
+      typeLog = 'machine_diff';
+
+      // UX: Passa automaticamente alle scartate dopo la conferma macchina
+      state.inputType = 'rejected';
+      state.inputVal = '0';
+
+    } else {
+      // 2. MODALITA' MANUALE o SCARTATE (Somma semplice)
+      delta = currentInput;
+      typeLog = state.inputType === 'rejected' ? 'rejected' : 'manual';
+      
+      // Reset input
+      state.inputVal = '0';
+      // Se eravamo in rejected, torniamo a amount (opzionale, dipende dal flusso preferito)
+      if(state.inputType === 'rejected') state.inputType = 'amount';
+    }
+
+    // Applica al totale del dipendente
+    state.totals[key] = (state.totals[key] || 0) + delta;
+
+    // Log
+    state.logs.push({
+      ts: Date.now(),
+      bank: state.bank,
+      emp: state.emp,
+      delta: delta,
+      type: typeLog
+    });
+
+    save();
+    render();
+  }
+
+  function undoLast() {
+    // Semplice undo: rimuove l'ultima operazione monetaria
+    // Nota: Non ripristina il valore macchina precedente per evitare complessità, 
+    // ma storna i soldi dal dipendente.
+    const last = state.logs.pop();
+    if (!last) return;
+    
+    const key = `${last.bank}|${last.emp}`;
+    state.totals[key] = (state.totals[key] || 0) - last.delta;
+    save();
+    render();
+  }
+
+  // --- RENDER ---
+  function render() {
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+
+    // 1. LISTA BANCHE
+    if (state.view === 'banks') {
+      app.innerHTML = `
+        <div class="header">
+          <div class="header-title" style="color:var(--accent)">MoneyTrack</div>
+          <div>
+            <button class="btn-icon" onclick="state.view='stats'; render()">📊</button>
+            <button class="btn-icon" onclick="state.view='info'; render()">ℹ️</button>
+          </div>
+        </div>
+        <div class="content">
+          <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px">SELEZIONA BANCA</div>
+          ${banks.map(b => `
+            <div class="list-item" onclick="state.bank='${b}'; state.view='employees'; render()">
+              <span class="item-name">${b}</span>
+              <span style="color:var(--text-muted)">›</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // 2. LISTA DIPENDENTI
+    else if (state.view === 'employees') {
+      app.innerHTML = `
+        <div class="header">
+          <button class="btn-icon" onclick="state.view='banks'; render()">‹</button>
+          <div class="header-title">${state.bank}</div>
+          <div style="width:32px"></div>
+        </div>
+        <div class="content">
+          ${employees.map(e => {
+            const val = state.totals[`${state.bank}|${e}`] || 0;
+            return `
+            <div class="list-item" onclick="state.emp='${e}'; state.inputVal='0'; state.inputType='amount'; state.view='counter'; render()">
+              <span class="item-name">${e}</span>
+              <span class="item-val" style="${val>0?'':'color:var(--text-muted)'}">${formatEUR(val)}</span>
+            </div>
+          `}).join('')}
+        </div>
+      `;
+    }
+
+    // 3. CONTATORE (CORE)
+    else if (state.view === 'counter') {
+      const key = getKey();
+      const currentTotal = state.totals[key] || 0;
+      const lastMachine = state.machineValues[state.bank] || 0;
+      const inputNum = safeFloat(state.inputVal);
+      
+      // Calcolo preview differenza
+      let diffPreview = 0;
+      if (state.mode === 'auto' && state.inputType === 'amount' && inputNum > 0) {
+        diffPreview = inputNum - lastMachine;
+      }
+
+      // Testo pulsante dinamico
+      let btnText = "CONFERMA";
+      let btnClass = "key-confirm";
+      
+      if (state.mode === 'auto' && state.inputType === 'amount') {
+        btnText = `CONF. MACCHINA (${inputNum} -> Delta: ${diffPreview > 0 ? '+' : ''}${diffPreview})`;
+        btnClass += " machine";
+      } else if (state.inputType === 'rejected') {
+        btnText = "AGGIUNGI SCARTATE";
+      } else {
+        btnText = "AGGIUNGI MANUALE";
+      }
+
+      app.innerHTML = `
+        <div class="header" style="background:var(--card-bg)">
+          <button class="btn-icon" onclick="state.view='employees'; render()">‹</button>
+          <div style="text-align:center">
+            <div style="font-size:10px; color:var(--text-muted)">${state.bank}</div>
+            <div class="header-title">${state.emp}</div>
+          </div>
+          <button class="btn-icon" style="font-size:14px; color:var(--warning)" onclick="state.totals['${key}']=0; save(); render()">Reset</button>
+        </div>
+
+        <div class="counter-ui">
+          <div class="display-area">
+            <div class="total-label">Totale Dipendente</div>
+            <div class="total-amount">${formatEUR(currentTotal)}</div>
+            
+            <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; background:#111827; padding:10px; border-radius:10px">
+              <div style="text-align:left">
+                <div style="font-size:10px; color:var(--text-muted)">Ultima Macchina</div>
+                <div style="font-family:monospace; color:var(--accent)">${formatEUR(lastMachine)}</div>
+              </div>
+              <div style="text-align:right">
+                <button onclick="state.mode = state.mode==='auto'?'manual':'auto'; render()" style="background:${state.mode==='auto'?'var(--primary)':'#374151'}; border:none; color:white; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:bold">
+                  ${state.mode==='auto' ? 'MODO: AUTO DIFF' : 'MODO: MANUALE'}
+                </button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-tab ${state.inputType==='amount'?'active':''}" onclick="state.inputType='amount'; render()">
+                Macchina / Totale
+              </div>
+              <div class="input-tab ${state.inputType==='rejected'?'active':''}" onclick="state.inputType='rejected'; render()">
+                Scartate
+              </div>
+            </div>
+
+            <div style="font-size:40px; margin-top:10px; color:${state.inputType==='amount'?'var(--accent)':'var(--warning)'}">
+              ${state.inputVal}
+            </div>
+            
+            ${diffPreview !== 0 ? `<div class="diff-info">Aggiungo: ${formatEUR(diffPreview)}</div>` : ''}
+          </div>
+
+          <div class="keypad">
+            <button class="key" onclick="digit('1')">1</button>
+            <button class="key" onclick="digit('2')">2</button>
+            <button class="key" onclick="digit('3')">3</button>
+            <button class="key" onclick="digit('4')">4</button>
+            <button class="key" onclick="digit('5')">5</button>
+            <button class="key" onclick="digit('6')">6</button>
+            <button class="key" onclick="digit('7')">7</button>
+            <button class="key" onclick="digit('8')">8</button>
+            <button class="key" onclick="digit('9')">9</button>
+            <button class="key key-action" onclick="undoLast()">UNDO</button>
+            <button class="key" onclick="digit('0')">0</button>
+            <button class="key key-action" onclick="backspace()">⌫</button>
+            
+            <button class="${btnClass}" onclick="confirmInput()">${btnText}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. STATISTICHE
+    else if (state.view === 'stats') {
+      const todayStart = new Date().setHours(0,0,0,0);
+      const todayLogs = state.logs.filter(l => l.ts >= todayStart);
+      const todayTotal = todayLogs.reduce((acc, l) => acc + l.delta, 0);
+
+      app.innerHTML = `
+        <div class="header">
+          <button class="btn-icon" onclick="state.view='banks'; render()">‹</button>
+          <div class="header-title">Report Giornaliero</div>
+          <div style="width:32px"></div>
+        </div>
+        <div class="content" style="padding:20px">
+          <div style="text-align:center; margin-bottom:20px">
+            <div style="font-size:12px; color:var(--text-muted)">TOTALE OGGI</div>
+            <div style="font-size:32px; font-weight:800; color:var(--success)">${formatEUR(todayTotal)}</div>
+          </div>
+          
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px">ULTIMI MOVIMENTI</div>
+          ${todayLogs.slice().reverse().map(l => `
+            <div style="background:var(--card-bg); padding:10px; margin-bottom:8px; border-radius:8px; display:flex; justify-content:space-between; font-size:13px">
+              <div>
+                <span style="color:var(--accent)">${l.bank}</span> <span style="color:#6b7280">•</span> ${l.emp}
+                <div style="font-size:10px; color:#6b7280; margin-top:2px">${new Date(l.ts).toLocaleTimeString()} - ${l.type === 'machine_diff' ? 'Diff. Macchina' : 'Manuale/Scarto'}</div>
+              </div>
+              <div style="font-weight:700; color:${l.delta > 0 ? 'var(--success)' : 'var(--danger)'}">
+                ${l.delta > 0 ? '+' : ''}${formatEUR(l.delta)}
+              </div>
+            </div>
+          `).join('')}
+          ${todayLogs.length === 0 ? '<div style="text-align:center; color:#4b5563">Nessun movimento oggi</div>' : ''}
+        </div>
+      `;
+    }
+
+    // 5. INFO
+    else if (state.view === 'info') {
+      app.innerHTML = `
+        <div class="header">
+          <button class="btn-icon" onclick="state.view='banks'; render()">‹</button>
+          <div class="header-title">Info</div>
+          <div style="width:32px"></div>
+        </div>
+        <div class="content info-container">
+          <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="20" fill="#1f2937"/>
+            <path d="M30 70V30L50 50L70 30V70" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M50 50L70 30" stroke="#06b6d4" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="75" cy="25" r="5" fill="#10b981"/>
+          </svg>
+          
+          <h2 style="margin:0; background:linear-gradient(to right, #3b82f6, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:28px">MoneyTrack</h2>
+          <p style="color:var(--text-muted)">Gestione Cassa Intelligente</p>
+
+          <div class="dev-card">
+            <div style="font-size:10px; color:var(--text-muted); letter-spacing:2px; margin-bottom:10px">DEVELOPED BY</div>
+            <div style="font-size:22px; font-weight:700; color:white">Francesco Testi</div>
+            <div style="width:50px; height:2px; background:var(--primary); margin:10px auto"></div>
+            <p style="font-size:13px; color:#9ca3af; line-height:1.6">
+              Soluzione personalizzata per ottimizzare i flussi di conteggio denaro con calcolo differenziale automatico.
+            </p>
+          </div>
+
+          <div style="margin-top:30px; font-size:11px; color:#4b5563">
+            v2.1.0 • Build 2024
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // --- INIT ---
+  load();
+  render();
+
+</script>
+</body>
+</html>
