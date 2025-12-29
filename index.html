@@ -212,13 +212,25 @@
     render();
   }
 
-  // --- NUOVA FUNZIONE RESET MACCHINA ---
-  function resetMachine() {
-    if (confirm("Attenzione: Vuoi azzerare la memoria macchina per questa banca? Il prossimo inserimento calcolerà la differenza da 0.")) {
-      state.machineValues[state.bank] = 0;
-      save();
-      render();
+  // --- NUOVA FUNZIONE IMPOSTA VALORE INIZIALE ---
+  function setInitialMachineValue() {
+    // Chiede all'utente il valore iniziale
+    let input = prompt("IMPOSTA VALORE INIZIALE MACCHINA\n(Utile se il conteggio è già iniziato da altri).\n\nInserisci il valore attuale visualizzato sulla selezionatrice:", "0");
+    
+    if (input === null) return; // Utente ha premuto annulla
+
+    // Sostituisce la virgola con punto per compatibilità
+    let val = parseFloat(input.replace(',', '.'));
+
+    if (isNaN(val) || val < 0) {
+      alert("Valore non valido.");
+      return;
     }
+
+    // Aggiorna solo la memoria macchina, senza toccare i soldi del dipendente
+    state.machineValues[state.bank] = val;
+    save();
+    render();
   }
 
   // --- RENDER ---
@@ -309,7 +321,7 @@
                 <div style="font-size:10px; color:var(--text-muted)">Ultima Macchina</div>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div style="font-family:monospace; color:var(--accent)">${formatEUR(lastMachine)}</div>
-                    <button onclick="resetMachine()" style="background:var(--danger); border:none; border-radius:4px; color:white; font-size:12px; padding:2px 6px; cursor:pointer;">↺</button>
+                    <button onclick="setInitialMachineValue()" style="background:var(--danger); border:none; border-radius:4px; color:white; font-size:12px; padding:4px 8px; cursor:pointer;">↺ SET START</button>
                 </div>
               </div>
               <div style="text-align:right">
@@ -417,7 +429,7 @@
           </div>
 
           <div style="margin-top:30px; font-size:11px; color:#4b5563">
-            v2.1.1 • Build 2024
+            v2.2.0 • Build 2024
           </div>
         </div>
       `;
