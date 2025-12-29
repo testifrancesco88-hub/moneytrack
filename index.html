@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MoneyTrack">
   <meta name="theme-color" content="#111827">
   <title>MoneyTrack</title>
   
-  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjcifQ==">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTW9uZXlUcmFjayIsInNob3J0X25hbWUiOiJNb25leVRyYWNrIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTE4MjciLCJ0aGVtZV9jb2xvciI6IiMxMTE4MjciLCJpY29ucyI6W3sic3JjIjoiaWNvbi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
 
   <style>
     :root {
@@ -35,7 +39,7 @@
       display: flex; flex-direction: column;
     }
 
-    /* === Splash Screen === */
+    /* === SPLASH SCREEN === */
     #splash-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color);
@@ -50,7 +54,7 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* === Header === */
+    /* === LAYOUT & HEADER === */
     .header {
       padding: env(safe-area-inset-top) 16px 12px;
       background: rgba(17, 24, 39, 0.95);
@@ -61,11 +65,9 @@
     }
     .header-title { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
     .btn-icon { background: none; border: none; font-size: 20px; color: var(--text-main); cursor: pointer; padding: 8px; }
-
-    /* === Content Scroll === */
     .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
 
-    /* === Lists === */
+    /* === LISTS === */
     .list-item {
       padding: 18px 20px;
       border-bottom: 1px solid #374151;
@@ -77,49 +79,50 @@
     .item-name { font-size: 16px; font-weight: 500; }
     .item-val { font-family: monospace; font-size: 16px; font-weight: 700; color: var(--success); }
 
-    /* === Keypad & Inputs === */
+    /* === COUNTER UI === */
     .counter-ui { display: flex; flex-direction: column; height: 100%; }
     .display-area { background: var(--card-bg); padding: 20px; text-align: center; border-bottom: 1px solid #374151; flex-shrink: 0; }
     .total-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
     .total-amount { font-size: 36px; font-weight: 800; margin: 5px 0; font-variant-numeric: tabular-nums; }
+    
     .input-row { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-    .input-tab { background: #374151; border: 1px solid transparent; color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 12px; }
+    .input-tab { background: #374151; border: 1px solid transparent; color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 12px; transition: all 0.2s; }
     .input-tab.active { background: rgba(59, 130, 246, 0.2); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    
     .diff-info { font-size: 13px; color: var(--warning); margin-top: 8px; font-family: monospace; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+
     .keypad { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #374151; }
-    .key { background: var(--card-bg); border: none; font-size: 24px; color: var(--text-main); display: flex; align-items: center; justify-content: center; }
+    .key { background: var(--card-bg); border: none; font-size: 24px; color: var(--text-main); display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
     .key:active { background: #4b5563; }
     .key-action { font-size: 16px; font-weight: 600; background: #2d3644; }
     .key-confirm { background: var(--primary); color: white; grid-column: span 3; font-size: 18px; font-weight: 700; padding: 20px; }
     .key-confirm.machine { background: var(--accent); } 
 
-    /* === Info Screen === */
+    /* === INFO & LOGO === */
     .info-container { padding: 40px 20px; text-align: center; }
     .dev-card { background: linear-gradient(145deg, #1f2937, #111827); border: 1px solid #374151; border-radius: 16px; padding: 30px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .logo-svg { width: 80px; height: 80px; margin-bottom: 15px; }
     .home-logo { width: 60px; height: 60px; margin-bottom: 10px; }
 
-    /* === Export Buttons === */
+    /* === EXPORT BUTTONS === */
     .export-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .btn-export { background: #374151; border: none; padding: 10px; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-export { background: #374151; border: none; padding: 12px; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
     .btn-export:active { transform: scale(0.98); background: #4b5563; }
 
     /* === PRINT / PDF STYLES === */
     @media print {
       body { background: white; color: black; height: auto; overflow: visible; }
       #app { height: auto; overflow: visible; display: block; }
-      .header, .keypad, .counter-ui, .input-row, .btn-icon, .export-bar, #splash-screen { display: none !important; }
-      .content { overflow: visible; padding: 0; }
-      .list-item { border-bottom: 1px solid #ccc; color: black; background: white; }
-      .item-name { color: black; }
-      .item-val { color: black; }
+      #splash-screen, .header, .keypad, .counter-ui, .input-row, .btn-icon, .export-bar, .info-container button { display: none !important; }
+      .content { overflow: visible; padding: 0; background: white; }
+      .list-item { border-bottom: 1px solid #ccc; color: black; background: white; padding: 10px 0; }
+      .item-name, .item-val { color: black; font-size: 12px; }
       
-      /* Stats Specific Print */
       .stats-print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
-      .stats-print-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 12px; }
+      .stats-print-header h1 { font-size: 24px; margin: 0; }
+      .stats-print-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 12px; color: black; }
     }
     .stats-print-header { display: none; }
-
   </style>
 </head>
 <body>
@@ -139,6 +142,7 @@
   <div id="app"></div>
 
 <script>
+  // --- ASSETS ---
   const LOGO_SVG = `
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="100" height="100" rx="20" fill="#1f2937"/>
@@ -170,14 +174,21 @@
   const safeFloat = (s) => parseFloat(s) || 0;
   const getKey = () => `${state.bank}|${state.emp}`;
 
+  // --- INIT ---
   window.addEventListener('load', () => {
+    load();
+    render();
+    // Splash screen timeout
     setTimeout(() => {
       const splash = document.getElementById('splash-screen');
-      splash.classList.add('hidden');
-      setTimeout(() => splash.remove(), 500);
-    }, 2000);
+      if(splash) {
+        splash.classList.add('hidden');
+        setTimeout(() => splash.remove(), 500);
+      }
+    }, 1500);
   });
 
+  // --- PERSISTENZA ---
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totals: state.totals, machineValues: state.machineValues, logs: state.logs }));
   }
@@ -189,6 +200,7 @@
     state.logs = data.logs || [];
   }
 
+  // --- CORE LOGIC ---
   function digit(n) {
     if (state.inputVal === '0' && n !== '.') state.inputVal = n;
     else state.inputVal += n;
@@ -212,12 +224,14 @@
       delta = currentInput - lastMachine;
       state.machineValues[state.bank] = currentInput;
       typeLog = 'machine_diff';
+      // Auto-switch to rejected for speed
       state.inputType = 'rejected';
       state.inputVal = '0';
     } else {
       delta = currentInput;
       typeLog = state.inputType === 'rejected' ? 'rejected' : 'manual';
       state.inputVal = '0';
+      // Reset to amount if needed, or stay
       if(state.inputType === 'rejected') state.inputType = 'amount';
     }
 
@@ -246,7 +260,7 @@
     render();
   }
 
-  // --- EXPORT FUNCTIONS ---
+  // --- EXPORT ---
   function getTodayLogs() {
     const todayStart = new Date().setHours(0,0,0,0);
     return state.logs.filter(l => l.ts >= todayStart);
@@ -255,37 +269,30 @@
   function exportCSV() {
     const logs = getTodayLogs();
     if(logs.length === 0) { alert("Nessun dato da esportare per oggi."); return; }
-
-    // Header CSV (Uso ; come separatore per compatibilità Excel ITA)
+    
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Data;Ora;Banca;Dipendente;Tipo;Importo\n";
 
     logs.forEach(l => {
       const date = new Date(l.ts);
-      const dataStr = date.toLocaleDateString();
-      const oraStr = date.toLocaleTimeString();
       const tipo = l.type === 'machine_diff' ? 'Diff. Macchina' : (l.type === 'rejected' ? 'Scarto' : 'Manuale');
-      const importo = l.delta.toFixed(2).replace('.', ','); // Formato ITA
-      
-      csvContent += `${dataStr};${oraStr};${l.bank};${l.emp};${tipo};${importo}\n`;
+      csvContent += `${date.toLocaleDateString()};${date.toLocaleTimeString()};${l.bank};${l.emp};${tipo};${l.delta.toFixed(2).replace('.', ',')}\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    const filename = `MoneyTrack_Report_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`;
-    link.setAttribute("download", filename);
+    link.setAttribute("download", `MoneyTrack_Report_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
 
   function exportPDF() {
-    // Sfrutta la funzione di stampa nativa del browser che permette "Salva come PDF"
     window.print();
   }
 
-  // --- RENDER ---
+  // --- RENDER ENGINE ---
   function render() {
     const app = document.getElementById('app');
     app.innerHTML = '';
@@ -415,7 +422,6 @@
             <button class="key key-action" onclick="undoLast()">UNDO</button>
             <button class="key" onclick="digit('0')">0</button>
             <button class="key key-action" onclick="backspace()">⌫</button>
-            
             <button class="${btnClass}" onclick="confirmInput()">${btnText}</button>
           </div>
         </div>
@@ -440,12 +446,8 @@
 
         <div class="content" style="padding:20px">
           <div class="export-bar">
-            <button class="btn-export" onclick="exportCSV()">
-              <span>📄</span> SCARICA CSV
-            </button>
-            <button class="btn-export" style="background:#0ea5e9" onclick="exportPDF()">
-              <span>🖨️</span> STAMPA / PDF
-            </button>
+            <button class="btn-export" onclick="exportCSV()"><span>📄</span> SCARICA CSV</button>
+            <button class="btn-export" style="background:#0ea5e9" onclick="exportPDF()"><span>🖨️</span> STAMPA / PDF</button>
           </div>
 
           <div style="text-align:center; margin-bottom:20px">
@@ -467,31 +469,22 @@
                     ${l.delta > 0 ? '+' : ''}${formatEUR(l.delta)}
                   </div>
                 </div>
-
-                <div class="stats-print-row" style="display:none; color:black;">
-                  <span style="width:80px">${new Date(l.ts).toLocaleTimeString()}</span>
+                <div class="stats-print-row" style="display:none;">
+                  <span style="width:60px">${new Date(l.ts).toLocaleTimeString()}</span>
                   <span style="width:120px; font-weight:bold">${l.bank}</span>
-                  <span style="width:100px">${l.emp}</span>
-                  <span style="width:100px">${l.type === 'machine_diff' ? 'Macchina' : (l.type === 'rejected'?'Scarto':'Manuale')}</span>
+                  <span style="width:80px">${l.emp}</span>
+                  <span style="width:80px">${l.type === 'machine_diff' ? 'Macchina' : (l.type === 'rejected'?'Scarto':'Manuale')}</span>
                   <span style="text-align:right; flex:1">${formatEUR(l.delta)}</span>
                 </div>
               </div>
             `).join('')}
           </div>
-          
           ${todayLogs.length === 0 ? '<div style="text-align:center; color:#4b5563">Nessun movimento oggi</div>' : ''}
         </div>
       `;
-      
-      // Hack per mostrare righe diverse in stampa
+      // Hack per layout stampa
       const styleEl = document.createElement('style');
-      styleEl.innerHTML = `
-        @media print {
-          .screen-only { display: none !important; }
-          .stats-print-row { display: flex !important; }
-          .stats-row-wrapper { background: transparent !important; padding: 0 !important; margin: 0 !important; border: none !important; }
-        }
-      `;
+      styleEl.innerHTML = `@media print { .screen-only { display: none !important; } .stats-print-row { display: flex !important; } .stats-row-wrapper { background: transparent !important; padding: 0 !important; margin: 0 !important; border: none !important; } }`;
       app.appendChild(styleEl);
     }
 
@@ -510,19 +503,13 @@
             <div style="font-size:10px; color:var(--text-muted); letter-spacing:2px; margin-bottom:10px">DEVELOPED BY</div>
             <div style="font-size:22px; font-weight:700; color:white">Francesco Testi</div>
             <div style="width:50px; height:2px; background:var(--primary); margin:10px auto"></div>
-            <p style="font-size:13px; color:#9ca3af; line-height:1.6">
-              Soluzione personalizzata per ottimizzare i flussi di conteggio denaro con calcolo differenziale automatico.
-            </p>
+            <p style="font-size:13px; color:#9ca3af; line-height:1.6">Soluzione personalizzata per ottimizzare i flussi di conteggio denaro con calcolo differenziale automatico.</p>
           </div>
-          <div style="margin-top:30px; font-size:11px; color:#4b5563">v2.4.0 • Build 2024</div>
+          <div style="margin-top:30px; font-size:11px; color:#4b5563">v2.5.0 • Build 2024</div>
         </div>
       `;
     }
   }
-
-  load();
-  render();
-
 </script>
 </body>
 </html>
