@@ -104,16 +104,17 @@
     .logo-svg { width: 80px; height: 80px; margin-bottom: 15px; }
     .home-logo { width: 60px; height: 60px; margin-bottom: 10px; }
 
-    /* === EXPORT BUTTONS === */
-    .export-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    /* === EXPORT & ACTIONS === */
+    .export-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .btn-export { background: #374151; border: none; padding: 12px; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
-    .btn-export:active { transform: scale(0.98); background: #4b5563; }
+    .btn-export:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-danger-block { width: 100%; background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); margin-top: 10px; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
 
     /* === PRINT / PDF STYLES === */
     @media print {
       body { background: white; color: black; height: auto; overflow: visible; }
       #app { height: auto; overflow: visible; display: block; }
-      #splash-screen, .header, .keypad, .counter-ui, .input-row, .btn-icon, .export-bar, .info-container button { display: none !important; }
+      #splash-screen, .header, .keypad, .counter-ui, .input-row, .btn-icon, .export-bar, .btn-danger-block, .info-container button { display: none !important; }
       .content { overflow: visible; padding: 0; background: white; }
       .list-item { border-bottom: 1px solid #ccc; color: black; background: white; padding: 10px 0; }
       .item-name, .item-val { color: black; font-size: 12px; }
@@ -178,7 +179,6 @@
   window.addEventListener('load', () => {
     load();
     render();
-    // Splash screen timeout
     setTimeout(() => {
       const splash = document.getElementById('splash-screen');
       if(splash) {
@@ -224,14 +224,12 @@
       delta = currentInput - lastMachine;
       state.machineValues[state.bank] = currentInput;
       typeLog = 'machine_diff';
-      // Auto-switch to rejected for speed
       state.inputType = 'rejected';
       state.inputVal = '0';
     } else {
       delta = currentInput;
       typeLog = state.inputType === 'rejected' ? 'rejected' : 'manual';
       state.inputVal = '0';
-      // Reset to amount if needed, or stay
       if(state.inputType === 'rejected') state.inputType = 'amount';
     }
 
@@ -256,6 +254,25 @@
     let val = parseFloat(input.replace(',', '.'));
     if (isNaN(val) || val < 0) { alert("Valore non valido."); return; }
     state.machineValues[state.bank] = val;
+    save();
+    render();
+  }
+
+  function clearDailyReport() {
+    if (!confirm("⚠️ ATTENZIONE ⚠️\n\nStai per cancellare tutti i dati registrati OGGI.\nI totali verranno azzerati.\n\nVuoi procedere?")) return;
+    
+    // Filtra mantenendo solo i log NON di oggi
+    const todayStart = new Date().setHours(0,0,0,0);
+    state.logs = state.logs.filter(l => l.ts < todayStart);
+    
+    // Ricalcola i totali da zero basandosi sui log rimasti (storico)
+    // Se l'app si usa giorno per giorno, questo porterà i totali a 0.
+    state.totals = {};
+    state.logs.forEach(l => {
+        const key = `${l.bank}|${l.emp}`;
+        state.totals[key] = (state.totals[key] || 0) + l.delta;
+    });
+
     save();
     render();
   }
@@ -449,8 +466,12 @@
             <button class="btn-export" onclick="exportCSV()"><span>📄</span> SCARICA CSV</button>
             <button class="btn-export" style="background:#0ea5e9" onclick="exportPDF()"><span>🖨️</span> STAMPA / PDF</button>
           </div>
+          
+          <button class="btn-danger-block" onclick="clearDailyReport()">
+             🗑️ SVUOTA REPORT OGGI
+          </button>
 
-          <div style="text-align:center; margin-bottom:20px">
+          <div style="text-align:center; margin:20px 0;">
             <div style="font-size:12px; color:var(--text-muted)">TOTALE OGGI</div>
             <div style="font-size:32px; font-weight:800; color:var(--success)">${formatEUR(todayTotal)}</div>
           </div>
@@ -482,7 +503,6 @@
           ${todayLogs.length === 0 ? '<div style="text-align:center; color:#4b5563">Nessun movimento oggi</div>' : ''}
         </div>
       `;
-      // Hack per layout stampa
       const styleEl = document.createElement('style');
       styleEl.innerHTML = `@media print { .screen-only { display: none !important; } .stats-print-row { display: flex !important; } .stats-row-wrapper { background: transparent !important; padding: 0 !important; margin: 0 !important; border: none !important; } }`;
       app.appendChild(styleEl);
@@ -505,7 +525,7 @@
             <div style="width:50px; height:2px; background:var(--primary); margin:10px auto"></div>
             <p style="font-size:13px; color:#9ca3af; line-height:1.6">Soluzione personalizzata per ottimizzare i flussi di conteggio denaro con calcolo differenziale automatico.</p>
           </div>
-          <div style="margin-top:30px; font-size:11px; color:#4b5563">v2.5.0 • Build 2024</div>
+          <div style="margin-top:30px; font-size:11px; color:#4b5563">v2.6.0 • Build 2024</div>
         </div>
       `;
     }
