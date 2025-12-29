@@ -35,6 +35,31 @@
       display: flex; flex-direction: column;
     }
 
+    /* === Splash Screen === */
+    #splash-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color);
+      z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease-out, visibility 0.5s;
+    }
+    .splash-logo { width: 120px; height: 120px; margin-bottom: 20px; animation: pulse 2s infinite ease-in-out; }
+    .splash-text { font-size: 32px; font-weight: 800; background: linear-gradient(to right, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
+    
+    /* Loader Spinner */
+    .loader {
+      width: 40px; height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-left-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
     /* === Header === */
     .header {
       padding: env(safe-area-inset-top) 16px 12px;
@@ -116,14 +141,37 @@
       margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
     .logo-svg { width: 80px; height: 80px; margin-bottom: 15px; }
+    .home-logo { width: 60px; height: 60px; margin-bottom: 10px; }
 
   </style>
 </head>
 <body>
 
-<div id="app"></div>
+  <div id="splash-screen">
+    <svg class="splash-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#1f2937"/>
+      <path d="M30 70V30L50 50L70 30V70" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M50 50L70 30" stroke="#06b6d4" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="75" cy="25" r="5" fill="#10b981"/>
+    </svg>
+    <div class="splash-text">MoneyTrack</div>
+    <div class="loader"></div>
+    <div style="margin-top: 20px; color: #6b7280; font-size: 12px;">Caricamento sistema...</div>
+  </div>
+
+  <div id="app"></div>
 
 <script>
+  // --- COSTANTE LOGO SVG (per riutilizzo) ---
+  const LOGO_SVG = `
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#1f2937"/>
+      <path d="M30 70V30L50 50L70 30V70" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M50 50L70 30" stroke="#06b6d4" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="75" cy="25" r="5" fill="#10b981"/>
+    </svg>
+  `;
+
   // --- DATI ---
   const banks = ['Euronet', 'Chianti Banca', 'CCB', 'CRV', 'Medio Banca', 'MPS', 'MPS PG', 'Intesa S.Paolo'];
   const employees = ['Francesco', 'Silvia', 'Dorota', 'William', 'Stefania', 'Filomena', 'Valeria', 'Flavio', 'Ciro', 'Alessandro', 'Ida'];
@@ -146,6 +194,17 @@
   const formatEUR = (n) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
   const safeFloat = (s) => parseFloat(s) || 0;
   const getKey = () => `${state.bank}|${state.emp}`;
+
+  // --- GESTIONE SPLASH SCREEN ---
+  window.addEventListener('load', () => {
+    // Simula tempo di caricamento (2 secondi)
+    setTimeout(() => {
+      const splash = document.getElementById('splash-screen');
+      splash.classList.add('hidden');
+      // Rimuove l'elemento dal DOM dopo la transizione
+      setTimeout(() => splash.remove(), 500);
+    }, 2000);
+  });
 
   // --- PERSISTENZA ---
   function save() {
@@ -212,22 +271,14 @@
     render();
   }
 
-  // --- NUOVA FUNZIONE IMPOSTA VALORE INIZIALE ---
   function setInitialMachineValue() {
-    // Chiede all'utente il valore iniziale
     let input = prompt("IMPOSTA VALORE INIZIALE MACCHINA\n(Utile se il conteggio è già iniziato da altri).\n\nInserisci il valore attuale visualizzato sulla selezionatrice:", "0");
-    
-    if (input === null) return; // Utente ha premuto annulla
-
-    // Sostituisce la virgola con punto per compatibilità
+    if (input === null) return;
     let val = parseFloat(input.replace(',', '.'));
-
     if (isNaN(val) || val < 0) {
       alert("Valore non valido.");
       return;
     }
-
-    // Aggiorna solo la memoria macchina, senza toccare i soldi del dipendente
     state.machineValues[state.bank] = val;
     save();
     render();
@@ -248,7 +299,10 @@
           </div>
         </div>
         <div class="content">
-          <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px">SELEZIONA BANCA</div>
+          <div style="padding: 40px 20px 20px 20px; text-align:center;">
+             <div class="home-logo" style="display:inline-block">${LOGO_SVG}</div>
+             <div style="color:var(--text-muted); font-size:12px; margin-top:10px; letter-spacing:1px">SELEZIONA BANCA</div>
+          </div>
           ${banks.map(b => `
             <div class="list-item" onclick="state.bank='${b}'; state.view='employees'; render()">
               <span class="item-name">${b}</span>
@@ -409,12 +463,7 @@
           <div style="width:32px"></div>
         </div>
         <div class="content info-container">
-          <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" rx="20" fill="#1f2937"/>
-            <path d="M30 70V30L50 50L70 30V70" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M50 50L70 30" stroke="#06b6d4" stroke-width="6" stroke-linecap="round"/>
-            <circle cx="75" cy="25" r="5" fill="#10b981"/>
-          </svg>
+          <div class="logo-svg" style="display:inline-block">${LOGO_SVG}</div>
           
           <h2 style="margin:0; background:linear-gradient(to right, #3b82f6, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:28px">MoneyTrack</h2>
           <p style="color:var(--text-muted)">Gestione Cassa Intelligente</p>
@@ -429,7 +478,7 @@
           </div>
 
           <div style="margin-top:30px; font-size:11px; color:#4b5563">
-            v2.2.0 • Build 2024
+            v2.3.0 • Build 2024
           </div>
         </div>
       `;
